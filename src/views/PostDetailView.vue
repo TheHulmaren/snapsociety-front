@@ -1,0 +1,427 @@
+<template>
+    <div class="flex flex-col gap-6 p-4">
+        <div class="flex items-center justify-between">
+            <SectionHeader :content="`👩‍💻 Post ID: ${post.id}`" />
+            <div class="gap-4 flex"
+                v-if="post.authorId === AuthHelper.getUser().id || AuthHelper.getUser().roles.some((r) => r === 'Admin' || r === 'Mod')">
+                <button v-if="post.authorId === AuthHelper.getUser().id" @click="onPostEdit" class="text-xs">수정하기</button>
+                <button @click="onPostDelete" class="text-xs text-red-500">삭제하기</button>
+            </div>
+        </div>
+        <div class="flex flex-col gap-4">
+            <h2 class="flex text-xl font-regular items-center gap-2"><span
+                    class="text-sm py-1 px-2 rounded-full bg-green-600 text-white font-semibold text-nowrap">{{ articleType.titleBefore
+                    }}</span> {{ post.title }}</h2>
+            <div class="flex gap-2 items-center">
+                <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
+                    class="w-10 h-10 rounded-full object-cover">
+                <div class="flex flex-col justify-between">
+                    <h3>{{ post.username }}</h3>
+                    <span class="text-xs">{{ TimeHelper.timeSince(new Date(post.createdAtUtc)) }}</span>
+                </div>
+            </div>
+        </div>
+        <div v-html="post.contentText"></div>
+        <SectionHeader v-if="post.articleTypeId === 'photo'" :content="`📸 ${photos.length} Photos`" />
+        <ul v-if="post.articleTypeId === 'photo'" class="flex flex-col gap-4">
+            <div v-if="photos.length === 0" class="flex flex-col items-center justify-center gap-2">
+                <h3 class="text-xl font-semibold">❌ No photos</h3>
+                <p class="text-sm">This post has no photos.</p>
+            </div>
+            <div v-else class="flex flex-col gap-2" v-for="photo in photos" :key="photo.id">
+                <PhotoVCard :photo="photo" />
+                <PhotoExifPanel :exif="photo.exifTags" />
+                <p>{{ photo.caption }}</p>
+            </div>
+        </ul>
+
+        <div class="flex flex-col justify-center gap-4">
+            <div class="flex w-full font-normal text-xs gap-4 items-center">
+                <SectionHeader :content="`📊 Stats`" />
+                <span>{{ TimeHelper.timeSince(new Date(post.createdAtUtc)) }}</span>
+                <span>💬 {{ commentCount }}</span>
+                <span>👁️‍🗨️ {{ viewCount }}</span>
+            </div>
+            <button @click="onLikeClicked" class="text-2xl">{{ post.isLikedByCurrentUser ? '❤️' : '🩶' }} {{ post.likeCount
+            }}</button>
+        </div>
+        <SectionHeader :content="`${articleType.commentBefore} ${comments.length} ${articleType.commentAfter}`" />
+        <ul class="flex flex-col gap-2">
+            <li class="relative flex flex-col gap-2" v-for="comment in comments" :key="comment.id">
+                <div class="flex gap-2 items-start">
+                    <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
+                        class="w-4 h-4 object-cover rounded-full">
+                    <div class="flex flex-col gap-2 grow">
+                        <div class="flex gap-2 items-center">
+                            <span v-if="AuthHelper.getUser().id === comment.authorId"
+                                class="font-semibold bg-main text-white rounded-full text-xs px-2">Me</span>
+                            <span v-else-if="comment.authorId === post.authorId"
+                                class="font-semibold bg-blue-500 text-white rounded-full text-xs px-2">OP</span>
+                            <h3 class=" text-sm">{{
+                                comment.username }}</h3>
+                            <span class="text-xs">{{ TimeHelper.timeSince(new Date(comment.createdAtUtc)) }}</span>
+                            <button
+                                @click="replyIndex = replyIndex === undefined ? comment.id : undefined; replyContent = ''"
+                                class="text-xs ml-auto">
+                                Reply</button>
+                        </div>
+                        <p v-if="commentEditIndex !== comment.id" class="py-1 px-2 bg-back rounded-lg">{{
+                            comment.content }}</p>
+                        <textarea v-else v-model="commentEditContent" placeholder="Edit comment"
+                            class="py-1 px-2 bg-back rounded-lg border-main border-0.5"
+                            oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                    </div>
+                </div>
+                <div v-if="commentEditIndex === comment.id" class="flex gap-2 justify-end">
+                    <button @click="commentEditIndex = undefined; commentEditContent = ''"
+                        class="px-4 py-1 rounded-full border-0.5 border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold text-xs w-fit">Cancel</button>
+                    <button @click="onCommentEditSubmit"
+                        class="px-4 py-1 rounded-full border-0.5 border-main text-main hover:bg-main hover:text-white font-semibold text-xs w-fit">Confirm</button>
+                </div>
+                <div v-else class="flex justify-end items-center text-xs gap-4">
+                    <button
+                        @click="commentEditIndex = commentEditIndex === comment.id ? undefined : comment.id; commentEditContent = comment.content; console.log(commentEditIndex)"
+                        v-if="AuthHelper.getUser().id === comment.authorId" class=" ">Edit</button>
+                    <button @click="onCommentDelete(comment)"
+                        v-if="AuthHelper.getUser().id === comment.authorId || (AuthHelper.getUser().roles ?? []).some(r => r === 'Admin')"
+                        class=" text-red-500">Delete</button>
+                </div>
+                <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[6px] bg-main"></div>
+                <ul class="flex flex-col gap-2 pl-6">
+                    <li class="relative flex flex-col gap-2" v-for="reply in comment.replies" :key="reply.id">
+                        <div class="flex gap-2 items-start">
+                            <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
+                                class="w-4 h-4 object-cover rounded-full">
+                            <div class="flex flex-col gap-2 grow">
+                                <div class="flex gap-2 items-center">
+                                    <span v-if="AuthHelper.getUser().id === reply.authorId"
+                                        class="font-semibold bg-main text-white rounded-full text-xs px-2">Me</span>
+                                    <h3 class=" text-sm">
+                                        {{
+                                            reply.username }}</h3>
+                                    <span class="text-xs">{{ TimeHelper.timeSince(new Date(reply.createdAtUtc)) }}</span>
+                                </div>
+                                <p v-if="commentEditIndex !== reply.id" class="py-1 px-2 bg-back rounded-lg">{{
+                                    reply.content }}</p>
+                                <textarea v-else v-model="commentEditContent" placeholder="Edit comment"
+                                    class="py-1 px-2 bg-back rounded-lg border-main border-0.5"
+                                    oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                            </div>
+                        </div>
+                        <div v-if="commentEditIndex === reply.id" class="flex gap-2 justify-end">
+                            <button @click="commentEditIndex = undefined; commentEditContent = ''"
+                                class="px-4 py-1 rounded-full border-0.5 border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold text-xs w-fit">Cancel</button>
+                            <button @click="onCommentEditSubmit"
+                                class="px-4 py-1 rounded-full border-0.5 border-main text-main hover:bg-main hover:text-white font-semibold text-xs w-fit">Confirm</button>
+                        </div>
+                        <div v-else class="flex justify-end items-center text-xs gap-4">
+                            <button
+                                @click="commentEditIndex = commentEditIndex === reply.id ? undefined : reply.id; commentEditContent = reply.content; console.log(commentEditIndex)"
+                                v-if="AuthHelper.getUser().id === reply.authorId" class=" ">Edit</button>
+                            <button @click="onCommentDelete(reply)"
+                                v-if="AuthHelper.getUser().id === reply.authorId || (AuthHelper.getUser().roles ?? []).some(r => r === 'Admin')"
+                                class=" text-red-500">Delete</button>
+                        </div>
+                        <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[6px] bg-main"></div>
+                    </li>
+                    <li v-if="replyIndex === comment.id" class="relative flex flex-col gap-2 ">
+                        <div class="flex gap-2 items-start">
+                            <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
+                                class="w-4 h-4 object-cover rounded-full">
+                            <div class="flex flex-col gap-2 grow">
+                                <div class="flex gap-2 items-center">
+                                    <h3 class=" text-sm">{{ AuthHelper.getUser().username }}</h3>
+                                    <span class="text-xs text-main font-semibold">New</span>
+                                </div>
+                                <textarea v-model="replyContent" placeholder="Your reply"
+                                    class="py-1 px-2 bg-back rounded-lg border-main border-0.5"
+                                    oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                            </div>
+                        </div>
+                        <button @click="onReplySubmit"
+                            class="text-xs ml-auto py-1 px-2 font-semibold text-main hover:text-white hover:bg-main border-main border-0.5 rounded-full">Reply</button>
+                        <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[6px] bg-main-light">
+                        </div>
+                    </li>
+                </ul>
+            </li>
+            <li class="relative flex flex-col gap-2 ">
+                <div class="flex gap-2 items-start">
+                    <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
+                        class="w-4 h-4 object-cover rounded-full">
+                    <div class="flex flex-col gap-2 grow">
+                        <div class="flex gap-2 items-center">
+                            <h3 class=" text-sm">{{ AuthHelper.getUser().username }}</h3>
+                            <span class="text-xs text-main font-semibold">New</span>
+                        </div>
+                        <textarea v-model="commentContent" placeholder="Your comment"
+                            class="py-1 px-2 bg-back rounded-lg border-main border-0.5"
+                            oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                    </div>
+                </div>
+                <button @click="onCommentSubmit"
+                    class="text-xs ml-auto py-1 px-2 font-semibold text-main hover:text-white hover:bg-main border-main border-0.5 rounded-full">Comment</button>
+                <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[6px] bg-main-light">
+                </div>
+            </li>
+        </ul>
+        <ul ref="pageButtonsRef" class="flex gap-2 flex-wrap justify-center">
+            <li v-for="index in Math.ceil(commentCount / commentPageSize)">
+                <button @click="onPageClick(index)" :class="{ 'bg-main text-white': index === commentPage + 1 }"
+                    class="px-4 py-1 rounded-full border-0.5 border-main text-main hover:bg-main hover:text-white font-semibold">{{
+                        index }}</button>
+            </li>
+        </ul>
+    </div>
+</template>
+<script setup>
+import axios from 'axios';
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { AuthHelper } from '@/helpers/AuthHelper';
+import { TimeHelper } from '@/helpers/TimeHelper';
+import PhotoVList from '@/components/PhotoVList.vue';
+import PhotoVCard from '@/components/PhotoVCard.vue';
+import PhotoExifPanel from '@/components/PhotoExifPanel.vue';
+import SectionHeader from '@/components/SectionHeader.vue';
+import DefaultButton from '@/components/DefaultButton.vue';
+
+
+const router = useRouter()
+const route = useRoute()
+
+const post = ref({})
+const photos = ref([])
+const comments = ref([])
+const replyIndex = ref()
+const replyContent = ref("")
+const commentContent = ref("")
+const commentCount = ref(50)
+const commentEditIndex = ref()
+const commentEditContent = ref("")
+const pageButtonsRef = ref()
+const articleType = ref({})
+const viewCount = ref(0)
+
+var commentPage = 0
+var commentPageSize = 15
+const articleTypes = [
+    {
+        name: "📸 사진",
+        slug: "photo",
+        titleBefore: "📸 사진",
+        commentBefore: "💬",
+        commentAfter: "댓글",
+    },
+    {
+        name: "📝 잡담",
+        slug: "casual",
+        titleBefore: "📝 잡담",
+        commentBefore: "💬",
+        commentAfter: "댓글",
+    },
+    {
+        name: "🙋 질문",
+        slug: "ask",
+        titleBefore: "𝐐. 질문",
+        commentBefore: "𝐀.",
+        commentAfter: "답변",
+    },
+    {
+        name: "➡️👨‍💻 개발자에게",
+        slug: "to-dev",
+        titleBefore: "➡️👨‍💻 개발자에게",
+        commentBefore: "👨‍💻",
+        commentAfter: "답변",
+    },
+    {
+        name: "⬅️👨‍💻 개발자로부터",
+        slug: "from-dev",
+        titleBefore: "⬅️👨‍💻 개발자로부터",
+        commentBefore: "👨‍💻",
+        commentAfter: "댓글",
+    }
+]
+
+const onPostDelete = async () => {
+    if (!confirm("🛑 정말로 이 글을 삭제하시겠어요?")) {
+        return
+    }
+
+    try {
+        await axios.delete(`/api/forumArticles/${route.params.id}`)
+    } catch (e) {
+        alert("🛜⁉️ Failed to delete post")
+        return
+    }
+
+    router.push('/main')
+}
+
+const onPostEdit = async () => {
+    router.push(`/edit/post/${route.params.id}`)
+}
+
+const onLikeClicked = async () => {
+    if (post.value.isLikedByCurrentUser) {
+        let result = await axios.delete(`/api/forumArticles/${route.params.id}/like`)
+        post.value.likeCount = result.data.count
+        post.value.isLikedByCurrentUser = false
+        return
+    }
+    let result = await axios.post(`/api/forumArticles/${route.params.id}/like`)
+    post.value.likeCount = result.data.count
+    post.value.isLikedByCurrentUser = true
+}
+
+const onPageClick = async (index) => {
+    commentPage = index - 1
+    await updateComments()
+    pageButtonsRef.value.scrollIntoView()
+}
+
+const onCommentEditSubmit = async () => {
+    if (commentEditContent.value === "") {
+        alert("✋ Comment cannot be empty!")
+        return
+    }
+
+    try {
+        await axios.put(`/api/comments/${commentEditIndex.value}`, {
+            content: commentEditContent.value
+        })
+    } catch (e) {
+        alert("🛜⁉️ Failed to edit comment")
+        return
+    }
+
+    commentEditIndex.value = undefined
+    commentEditContent.value = ""
+    await updateComments()
+}
+
+const onReplySubmit = async () => {
+    if (replyContent.value === "") {
+        alert("✋ Reply cannot be empty!")
+        return
+    }
+
+    try {
+        await axios.post(`/api/comments`, {
+            authorId: AuthHelper.getUser().id,
+            articleId: route.params.id,
+            content: replyContent.value,
+            parentCommentId: replyIndex.value
+        })
+    } catch (e) {
+        alert("🛜⁉️ Failed to post reply")
+        return
+    }
+
+    await updateComments()
+    replyContent.value = ""
+}
+
+const onCommentSubmit = async () => {
+    if (commentContent.value === "") {
+        alert("✋ Comment cannot be empty!")
+        return
+    }
+
+    try {
+        await axios.post(`/api/comments`, {
+            authorId: AuthHelper.getUser().id,
+            articleId: route.params.id,
+            content: commentContent.value,
+            parentCommentId: null
+        })
+    } catch (e) {
+        alert("🛜⁉️ Failed to post comment")
+        return
+    }
+
+    let result = await axios.get(`/api/comments/count?articleId=${route.params.id}`)
+    commentCount.value = result.data
+
+    // last 
+    commentPage = Math.ceil(commentCount.value / commentPageSize) - 1
+    await updateComments()
+    commentContent.value = ""
+}
+
+const onCommentDelete = async (comment) => {
+    if (!confirm("🛑 Do you really want to delete this comment?")) {
+        return
+    }
+
+    try {
+        await axios.delete(`/api/comments/${comment.id}`)
+    } catch (e) {
+        alert("🛜⁉️ Failed to delete comment")
+        return
+    }
+
+    let result = await axios.get(`/api/comments/count?articleId=${route.params.id}`)
+    commentCount.value = result.data
+
+    // last 
+    commentPage = Math.ceil(commentCount.value / commentPageSize) - 1
+    await updateComments()
+}
+
+const updateComments = async () => {
+    let result = await axios.get(`/api/comments?articleId=${route.params.id}&forumCommentSorts=Added&isDescending=false&pageIndex=${commentPage}&pageLimit=${commentPageSize}`)
+
+    await Promise.all(result.data.map(async (comment) => {
+        comment.username = await axios.get(`/api/users/${comment.authorId}`).then((result) => result.data.userName)
+        comment.replies = (await axios.get(`/api/comments/${comment.id}/replies`)).data
+        comment.replies = await Promise.all(comment.replies.map(async (reply) => {
+            reply.username = await axios.get(`/api/users/${reply.authorId}`).then((result) => result.data.userName)
+            return reply
+        }))
+    }))
+
+    comments.value = result.data
+}
+
+onMounted(async () => {
+    let result = await axios.get(`/api/forumArticles/${route.params.id}`)
+    result.data.username = await axios.get(`/api/users/${result.data.authorId}`).then((result) => result.data.userName)
+    post.value = result.data
+
+    articleType.value = articleTypes.filter((t) => t.slug === post.value.articleTypeId)[0]
+
+    result = await axios.get(`/api/photos?breakpoints=Large&articleId=${route.params.id}&photoSorts=Added&isDescending=true&includePreUploaded=false`)
+
+    photos.value = result.data.map((photo) => {
+        return {
+            ...photo,
+            url: photo.largeUrl,
+            username: post.value.username,
+            caption: post.value.articlePhotos.filter((p) => p.photoId === photo.id)[0].caption,
+            order: post.value.articlePhotos.filter((p) => p.photoId === photo.id)[0].order
+        }
+    }).sort((a, b) => a.order - b.order)
+
+    result = await axios.get(`/api/comments?articleId=${route.params.id}&forumCommentSorts=Added&isDescending=false&pageIndex=0&pageLimit=${commentPageSize}`)
+    console.log(result.data)
+
+    await Promise.all(result.data.map(async (comment) => {
+        comment.username = await axios.get(`/api/users/${comment.authorId}`).then((result) => result.data.userName)
+        comment.replies = (await axios.get(`/api/comments/${comment.id}/replies`)).data
+        comment.replies = await Promise.all(comment.replies.map(async (reply) => {
+            reply.username = await axios.get(`/api/users/${reply.authorId}`).then((result) => result.data.userName)
+            return reply
+        }))
+    }))
+
+    comments.value = result.data
+
+    result = await axios.get(`/api/comments/count?articleId=${route.params.id}`)
+    commentCount.value = result.data
+
+    // update view count
+    result = await axios.post(`/api/forumArticles/${route.params.id}/view`)
+    viewCount.value = result.data.count
+})
+</script>

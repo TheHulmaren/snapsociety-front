@@ -1,0 +1,49 @@
+<template>
+    <li class="flex flex-col gap-2">
+        <div v-if="props.showProfile" class="flex items-center gap-2">
+            <img class="w-6 h-6 rounded-full object-cover hover:cursor-pointer"
+            :src="props.photo.user.profilePhotoUrl ?? '/default-prof-img.webp'">
+            <h1 class=" text-sm font-normal text-text-dark hover:cursor-pointer">{{ props.photo.user.userName }}</h1>
+            <span class=" text-xs font-normal text-text-dark hover:cursor-pointer">{{ TimeHelper.timeSince(new
+                Date(props.photo.createdAtUtc)) }} ago</span>
+            <div class="grow"></div>
+            <button @click="onLikeClicked" class=" text-base text-main font-semibold">{{ isLiked ? "❤️" : "🩶" }} {{
+                props.photo.likeCount
+            }}</button>
+        </div>
+        <img @click="router.push(`/photos/${photo.id}`)" class="rounded-lg cursor-auto"
+            :src="props.photo.largeUrl ?? props.photo.mediumUrl ?? props.photo.smallUrl ?? props.photo.thumbnailUrl ?? props.photo.url"
+            :alt="props.photo.desc" />
+    </li>
+</template>
+<script setup>
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
+import { TimeHelper } from '@/helpers/TimeHelper';
+import { defineProps } from 'vue'
+import { useRouter } from 'vue-router'
+import { AuthHelper } from '@/helpers/AuthHelper';
+
+const router = useRouter();
+
+const props = defineProps(['photo', 'showProfile'])
+
+const isLiked = ref(false)
+
+const onLikeClicked = async () => {
+    if (isLiked.value) {
+        let result = await axios.delete(`/api/photos/${props.photo.id}/like`)
+        props.photo.likeCount = result.data.count
+        isLiked.value = false
+        return
+    }
+    let result = await axios.post(`/api/photos/${props.photo.id}/like`)
+    props.photo.likeCount = result.data.count
+    isLiked.value = true
+}
+
+onMounted(async () => {
+    console.log(props.photo)
+    isLiked.value = props.photo.isLikedByCurrentUser
+})
+</script>
