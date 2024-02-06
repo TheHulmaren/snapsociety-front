@@ -242,7 +242,7 @@ const queryTable = {
 const fetchUserData = async (posts) => {
     await Promise.all(posts.map(async (post) => {
         let result = await axios.get(`/api/users/${post.authorId}`);
-        post.username = result.data.userName;
+        post.user = result.data;
     }));
 
     return posts

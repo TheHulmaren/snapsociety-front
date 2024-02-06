@@ -1,5 +1,5 @@
 <template>
-    <ul class="flex gap-2">
+    <ul class="flex gap-2 px-4">
         <li v-for="(option, index) in options" :key="index"
             class=" hover:bg-text-searchbar hover:text-white text-sm font-semibold text-text-searchbar hover:cursor-pointer px-2 py-1 rounded-full border-0.5 border-stroke-mid">
             <select @change="onDropdownChange(index, $event)"

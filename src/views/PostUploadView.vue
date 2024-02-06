@@ -270,6 +270,8 @@ const onPostSubmit = async () => {
 
     let articleUploaded = false
     let articleId = null
+    var contentTextHtml = sceditor.instance(textarea).val()
+
     try {
         let result = await axios.post("/api/forumArticles",
             {
@@ -295,7 +297,7 @@ const onPostSubmit = async () => {
         router.push("/main/posts")
         alert("✅ Posted!")
     }
-    catch {
+    catch(e) {
         if (articleUploaded) {
             await axios.delete(`/api/forumArticles/${articleId}`)
         }

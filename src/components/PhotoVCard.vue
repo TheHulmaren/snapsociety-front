@@ -1,11 +1,11 @@
 <template>
-    <li class="flex flex-col gap-2">
+    <li class="flex flex-col gap-2 p-4">
         <div v-if="props.showProfile" class="flex items-center gap-2">
             <img class="w-6 h-6 rounded-full object-cover hover:cursor-pointer"
             :src="props.photo.user.profilePhotoUrl ?? '/default-prof-img.webp'">
             <h1 class=" text-sm font-normal text-text-dark hover:cursor-pointer">{{ props.photo.user.userName }}</h1>
             <span class=" text-xs font-normal text-text-dark hover:cursor-pointer">{{ TimeHelper.timeSince(new
-                Date(props.photo.createdAtUtc)) }} ago</span>
+                Date(props.photo.createdAtUtc)) }} 전</span>
             <div class="grow"></div>
             <button @click="onLikeClicked" class=" text-base text-main font-semibold">{{ isLiked ? "❤️" : "🩶" }} {{
                 props.photo.likeCount

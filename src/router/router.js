@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import axios from "axios";
 
 import { AuthHelper } from "../helpers/AuthHelper";
 
@@ -138,14 +139,31 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import("../views/AboutView.vue"),
     },
+    {
+      path: "/manageBans",
+      name: "manageBans",
+      component: () => import("../views/UserBanView.vue"),
+    },
+    {
+      path: "/banned",
+      name: "banned",
+      component: () => import("../views/BannedView.vue"),
+    }
   ],
 });
 
 router.beforeEach(async (to, from) => {
-  if (to.name === "login" || (await AuthHelper.checkIfAuthed())) {
-    return true;
+  // Redirect to login if not authed
+  if (to.name !== "login" && !(await AuthHelper.checkIfAuthed())) {
+    return { name: "login" };
   }
-  return { name: "login" };
+  
+  // Redirect to ban page if banned
+  // but allow logging out and settings
+  if (!["userSettings", "banned", "login"].includes(to.name) && (await AuthHelper.checkIfBanned(AuthHelper.getUser().id)).isBanned) {
+    return { name: "banned" };
+  }
+  return true
 });
 
 export default router;

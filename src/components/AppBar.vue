@@ -4,23 +4,26 @@
             Snap 📸<br>Society
         </h1>
         <form @submit.prevent="router.push('/search-photo?query=' + searchQuery)" class="grow">
-            <input v-model="searchQuery" placeholder="🔍   사진을 간략히 묘사해 주세요.." class="py-2 px-4 rounded-full w-full bg-button-back-light border-0.5 border-stroke-light text-xs font-normal text-text-searchbar"/>
+            <input v-model="searchQuery" placeholder="🔍   사진을 간략히 묘사해 주세요.."
+                class="py-2 px-4 rounded-full w-full bg-button-back-light border-0.5 border-stroke-light text-xs font-normal text-text-searchbar" />
         </form>
         <div class="relative">
-            <img v-if="isAuthed"
-            @click="onProfileClicked"
-            class="w-8 h-8 rounded-full object-cover object-left-top hover:cursor-pointer"
-            src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29">
-            <button @click="router.push('/login')" v-else class="py-2 px-4 rounded-full border-0.5 border-main text-xs font-semibold text-main">
+            <img v-if="isAuthed" @click="onProfileClicked"
+                class="w-8 h-8 rounded-full object-cover object-left-top hover:cursor-pointer"
+                :src="user.profilePhotoUrl ?? '/default-prof-img.webp'">
+            <button @click="router.push('/login')" v-else
+                class="py-2 px-4 rounded-full border-0.5 border-main text-xs font-semibold text-main">
                 Login
             </button>
-            <div class="flex absolute top-100 right-0 rounded-xl bg-white shadow-md border-stroke-light border mt-2 transition-all">
-                <ProfileActions v-if="isAuthed && showProfileActions" @on-select="showProfileActions = false"/>
+            <div
+                class="flex absolute top-100 right-0 rounded-xl bg-white shadow-md border-stroke-light border mt-2 transition-all">
+                <ProfileActions v-if="isAuthed && showProfileActions" @on-select="showProfileActions = false" />
             </div>
         </div>
     </div>
 </template>
 <script setup>
+import axios from 'axios';
 import { AuthHelper } from '@/helpers/AuthHelper';
 import { onMounted, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -32,6 +35,7 @@ const router = useRouter();
 const isAuthed = ref(false);
 const showProfileActions = ref(false);
 const searchQuery = ref("");
+const user = ref({});
 
 onMounted(async () => {
     console.log("Checking if authed")
@@ -43,8 +47,17 @@ watch(
     async () => {
         // Update User info display whenever the route changes.
         isAuthed.value = await AuthHelper.checkIfAuthed();
+        fetchUserData();
     }
-);
+)
+
+const fetchUserData = async () => {
+    if (!isAuthed.value) {
+        return
+    }
+    let result = await axios.get(`/api/users/${AuthHelper.getUser().id}`)
+    user.value = result.data
+}
 
 const onProfileClicked = () => {
     if (!isAuthed.value) {
@@ -52,5 +65,6 @@ const onProfileClicked = () => {
         return
     }
     showProfileActions.value = !showProfileActions.value
+    fetchUserData()
 }
 </script>

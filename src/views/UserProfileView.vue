@@ -1,13 +1,11 @@
 <template>
     <div class="gap-4 flex flex-col">
-        <div
-            class="w-full h-36 object-cover object-top top-0 
-             bg-top bg-fixed bg-contain
-            bg-[url('https://drscdn.500px.org/photo/1084667777/q%3D90_m%3D1024/v2?sig=8c88b8e6cf92b394fe1f5111b752386d48ec846569852ccf78a607d8cdb62690')]">
+        <div @click="onBannerClicked" class="w-full aspect-[21/9] cursor-pointer overflow-hidden">
+            <img :src="user.bannerPhoto?.largeUrl ?? '/default-banner-img.webp'" alt="배너 사진" class="w-full h-full object-cover object-center">
         </div>
         <input @change="onProfilePhotoSubmit" id="imageInput" type="file" name="file" style="display:none;"
             accept="image/jpg, image/jpeg, image/png, image/webp, image/tiff" />
-        <div class="my-4 px-4 flex flex-col items-center -mt-16 gap-4">
+        <div class="main-section my-4 px-4 flex flex-col items-center -mt-16 md:-mt-20 gap-4">
             <img @click="onProfileImgClicked" :src="user.profilePhotoUrl ?? '/default-prof-img.webp'" alt="프로필 사진"
                 class="w-24 md:w-32 aspect-square rounded-full object-cover hover:cursor-pointer relative z-10 border-white border-4 cursor-pointer">
             <h2 class="text-xl font-semibold">{{ user.userName }}</h2>
@@ -19,12 +17,16 @@
             <DefaultButton v-else-if="AuthHelper.getUser().id === user.id" @click="showBioEdit = true" type="primary"
                 content="프로필 메세지 수정"></DefaultButton>
         </div>
+        <ModalWrapperView v-if="showModal" @on-close="showModal = false">
+            <PhotoSelectView :page-limit="10" :selection-limit="1" :columns="2" @on-confirm="onBannerSelected" />
+        </ModalWrapperView>
         <div class="flex flex-col px-4">
             <ul class="flex gap-2 flex-wrap">
-                <DefaultButton class="grow" v-for="tab in tabs" :key="tab.slug" :content="tab.name" :is-selected="selectedTabSlug === tab.slug" @click="router.push(`/user/${user.id}/${tab.slug}`)" />
+                <DefaultButton class="grow" v-for="tab in tabs" :key="tab.slug" :content="tab.name"
+                    :is-selected="selectedTabSlug === tab.slug" @click="router.push(`/user/${user.id}/${tab.slug}`)" />
             </ul>
         </div>
-        <RouterView class="px-4" :key="route.fullPath" />
+        <RouterView class="" :key="route.fullPath" />
     </div>
 </template>
 <script setup>
@@ -34,6 +36,8 @@ import { AuthHelper } from '@/helpers/AuthHelper';
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import ModalWrapperView from './ModalWrapperView.vue';
+import PhotoSelectView from './PhotoSelectView.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -41,6 +45,7 @@ const router = useRouter();
 const user = ref({});
 const selectedTabSlug = ref("")
 const showBioEdit = ref(false)
+const showModal = ref(false)
 
 var imgInput = null
 
@@ -67,17 +72,35 @@ const tabs = [
     }
 ]
 
+const onBannerClicked = () => {
+    if (AuthHelper.getUser().id !== user.value.id) return
+    if(!confirm("📷 배너 사진을 변경하시겠습니까?")) return
+    showModal.value = true
+}
+
+const onBannerSelected = async (selected) => {
+    if(selected.length === 0) return
+    let result = await axios.put(`/api/users/${route.params.id}`, {
+        userName: user.value.userName,
+        bio: user.value.bio,
+        bannerPhotoId: selected[0].id
+    })
+    user.value = result.data
+    showModal.value = false
+}
+
 const onBioSaved = async () => {
     let result = await axios.put(`/api/users/${route.params.id}`, {
         userName: user.value.userName,
-        bio: user.value.bio
+        bio: user.value.bio,
+        bannerPhotoId: user.value.bannerPhoto?.id
     })
     user.value = result.data
     showBioEdit.value = false
 }
 
 const onProfileImgClicked = () => {
-    if(AuthHelper.getUser().id !== user.value.id) return
+    if (AuthHelper.getUser().id !== user.value.id) return
     if (!confirm("📷 프로필 사진을 변경하시겠습니까?")) return
     imgInput.click()
 }

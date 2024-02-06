@@ -40,6 +40,27 @@ export class AuthHelper {
     return true;
   }
 
+  static async checkIfBanned(id: string) {
+    try{
+      let result = await axios.get(`/api/users/${id}/ban`);
+      let unbanDate = new Date(result.data.unbannedAtUtc);
+      if(unbanDate > new Date()){
+        return {
+          isBanned: true,
+          banDate: new Date(result.data.bannedAtUtc),
+          unbanDate: unbanDate,
+          reason: result.data.reason,
+          days: result.data.days
+        };
+      }
+    }catch(e){
+      console.log(e);
+    }
+    return {
+      isBanned: false
+    };
+  }
+
   static async signIn(id: string, password: string) {
     var response;
     try {
@@ -83,7 +104,9 @@ export class AuthHelper {
   }
 
   static parseJwt = (token: string) => {
-    return JSON.parse(atob(token.split(".")[1]));
+    let binString = atob(token.split(".")[1]);
+    let bytes = Uint8Array.from(binString, (m) => m.codePointAt(0))
+    return JSON.parse(new TextDecoder().decode(bytes));
   };
 
   // Decodes Access Token and returns its value.

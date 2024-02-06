@@ -48,7 +48,6 @@ const addPhotos = async () => {
 }
 
 const onPhotoClicked = (photo) => {
-    console.log(photo)
     if (selection.value.some((s) => s.id === photo.id)){
         deselectPhoto(photo)
         return
@@ -61,7 +60,7 @@ const selectPhoto = (photo) => {
         alert("📁🛜 You can't select the same photo twice")
         return
     }
-    if (selection.value.length + 1 >= props.selectionLimit) {
+    if (selection.value.length + 1 > props.selectionLimit) {
         alert("📁🛜 You can't select more than " + props.selectionLimit + " photos")
         return
     }

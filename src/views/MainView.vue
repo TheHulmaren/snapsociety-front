@@ -1,7 +1,7 @@
 <template>
-    <div class="flex flex-col gap-4 py-4 px-4">
+    <div class="flex flex-col gap-4 py-4">
         <!-- <DailyUpdateLabel /> -->
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2 px-4">
             <ul class="flex gap-2 flex-wrap">
                 <DefaultButton class="grow" v-for="tab in tabs" :key="tab.slug" :content="tab.name" :is-selected="selectedTabSlug === tab.slug" @click="onTabClick(tab)" />
             </ul>

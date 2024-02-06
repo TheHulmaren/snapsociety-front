@@ -3,7 +3,7 @@
         <div class="flex">
             <QueryParamsBuilder :initial="route.query.query?.split('_')" :option-tree="options"
                 @query-changed="onQueryChanged" class="grow" />
-            <DefaultButton class="ml-2" :content="layout === 'vertical' ? '수직' : '블록형'"
+            <DefaultButton class="ml-2 mr-4" :content="layout === 'vertical' ? '수직' : '블록형'"
                 @click="onLayoutToggle" />
         </div>
         <div v-if="isUnsupportedQuery" class="flex flex-col items-center my-10 gap-2">
