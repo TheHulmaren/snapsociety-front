@@ -3,13 +3,13 @@
         <div class="flex">
             <QueryParamsBuilder :initial="route.query.query?.split('_')" :option-tree="options"
                 @query-changed="onQueryChanged" class="grow" />
-            <DefaultButton class="ml-2 mr-4" :content="layout === 'vertical' ? '수직' : '블록형'"
-                @click="onLayoutToggle" />
+            <DefaultButton class="ml-2 mr-4" :content="layout === 'vertical' ? '수직' : '블록형'" @click="onLayoutToggle" />
         </div>
         <div v-if="isUnsupportedQuery" class="flex flex-col items-center my-10 gap-2">
             <span class="font-semibold text-2xl text-main">🙏 Sorry..</span>
             <span class="font-sm text-text-dark">That query is not supported, yet.</span>
         </div>
+        <Skeleton v-else-if="isLoading" />
         <PhotoVList v-else-if="!isEmpty && layout === 'vertical'" :photos="photos" />
         <PhotoMasonryList ref="masonryListRef" v-else-if="!isEmpty && layout === 'masonry'" :columns="3" />
         <div v-else>
@@ -17,10 +17,6 @@
                 <span class="font-semibold text-2xl text-main">😱 Wow, emptiness!</span>
                 <span class="font-sm text-text-dark">There are no posts, yet.</span>
             </div>
-        </div>
-        <div class="flex flex-col items-center text-base" v-if="isLoading && !isEmpty">
-            <span class=" font-semibold">🤔 Loading..</span>
-            <span class=" text-sm">Please wait a moment!</span>
         </div>
         <div class="flex flex-col items-center text-base" v-if="reachedEnd">
             <span class=" font-semibold">✋ You've reached an end of the list<br></span>
@@ -37,12 +33,13 @@ import QueryParamsBuilder from '@/components/QueryParamsBuilder.vue';
 import PhotoVList from '../components/PhotoVList.vue';
 import PhotoMasonryList from '@/components/PhotoMasonryList.vue';
 import DefaultButton from '@/components/DefaultButton.vue';
+import Skeleton from '@/components/Skeleton.vue';
 
 const route = useRoute()
 const router = useRouter()
 
 const emit = defineEmits(['queryChanged'])
-const props = defineProps(['uploaderId'])
+const props = defineProps(['uploaderId', 'defaultQuery'])
 
 const photos = ref([])
 const layout = ref('vertical')
@@ -57,9 +54,6 @@ var pageLimit = 5
 var currentQuery = ""
 
 const options = [
-    {
-        name: "🔥 인기"
-    },
     {
         name: "🏆 탑",
         options: [
@@ -78,6 +72,9 @@ const options = [
         ]
     },
     {
+        name: "🔥 인기"
+    },
+    {
         name: "🕗 업로드",
         options: [
             {
@@ -90,7 +87,7 @@ const options = [
     }
 ]
 
-const onLayoutToggle =async () => {
+const onLayoutToggle = async () => {
     layout.value = layout.value === "vertical" ? "masonry" : "vertical"
     pageIndex = 0
     pageLimit = layout.value === "vertical" ? 5 : 20
@@ -114,8 +111,9 @@ const updatePhotos = async (query) => {
     let result = await queryTable[currentQuery]();
     result = await fetchUserData(result);
 
-    if(result.length === 0) {
+    if (result.length === 0) {
         isEmpty.value = true
+        isLoading.value = false
         return
     }
 
@@ -135,16 +133,6 @@ const onQueryChanged = async (query) => {
 
 const queryTable = {
     // in korean
-    "🕗 업로드_👇 최신 순": async () => {
-        const result = await axios.get(`/api/photos?breakpoints=Large&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
-            + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
-        return result.data
-    },
-    "🕗 업로드_👆 오래된 순": async () => {
-        const result = await axios.get(`/api/photos?breakpoints=Large&isDescending=false&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
-            + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
-        return result.data
-    },
     "🔥 인기": async () => {
         const result = await axios.get(`/api/photos?breakpoints=Large&photoSorts=Hot&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&hotLikesThreshold=1`
             + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
@@ -155,6 +143,7 @@ const queryTable = {
         d.setDate(d.getDate() - 7);
         const result = await axios.get(`/api/photos?breakpoints=Large&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&topLikesThreshold=1&fromUtc=${d.toISOString()}`
             + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
+        console.log(result.data)
         return result.data
     },
     "🏆 탑_🕗 지난 한달": async () => {
@@ -175,7 +164,17 @@ const queryTable = {
         const result = await axios.get(`/api/photos?breakpoints=Large&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&topLikesThreshold=1`
             + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
         return result.data
-    }
+    },
+    "🕗 업로드_👇 최신 순": async () => {
+        const result = await axios.get(`/api/photos?breakpoints=Large&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+            + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
+        return result.data
+    },
+    "🕗 업로드_👆 오래된 순": async () => {
+        const result = await axios.get(`/api/photos?breakpoints=Large&isDescending=false&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+            + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
+        return result.data
+    },
 }
 
 const fetchUserData = async (photos) => {
@@ -189,11 +188,14 @@ const fetchUserData = async (photos) => {
 
 
 onMounted(async () => {
-    if(layout.value === "masonry") {
+    if (layout.value === "masonry") {
         pageLimit = 20
     }
     if (route.query.query !== undefined) {
         await updatePhotos(route.query.query.split('_'))
+    }
+    else if (props.defaultQuery !== undefined) {
+        router.push(route.path + `?query=${props.defaultQuery}`)
     }
 
     let list = document.getElementById("photoQueryView_div")
@@ -220,7 +222,7 @@ onMounted(async () => {
                 return
             }
             result = await fetchUserData(result);
-            if(layout.value === "masonry") {
+            if (layout.value === "masonry") {
                 masonryListRef.value.appendItems(result)
             }
             else {

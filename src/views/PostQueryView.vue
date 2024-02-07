@@ -6,16 +6,13 @@
             <span class="font-semibold text-2xl text-main">🙏 Sorry..</span>
             <span class="font-sm text-text-dark">That query is not supported, yet.</span>
         </div>
+        <Skeleton v-if="isLoading"/>
         <PostVList v-else-if="posts.length > 0" :posts="posts" />
         <div v-else>
             <div class="flex flex-col items-center my-10 gap-2">
                 <span class="font-semibold text-2xl text-main">😱 Wow, emptiness!</span>
                 <span class="font-sm text-text-dark">There are no posts, yet.</span>
             </div>
-        </div>
-        <div class="flex flex-col items-center text-base" v-if="isLoading">
-            <span class=" font-semibold">🤔 Loading..</span>
-            <span class=" text-sm">Please wait a moment!</span>
         </div>
         <div class="flex flex-col items-center text-base" v-if="reachedEnd">
             <span class=" font-semibold">✋ You've reached an end of the list<br></span>
@@ -29,12 +26,13 @@ import { ref, watch, defineEmits, defineProps, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import QueryParamsBuilder from '@/components/QueryParamsBuilder.vue';
 import PostVList from '../components/PostVList.vue';
+import Skeleton from '@/components/Skeleton.vue';
 
 const route = useRoute()
 const router = useRouter()
 
 const emit = defineEmits(['queryChanged'])
-const props = defineProps(['authorId'])
+const props = defineProps(['authorId', 'articleType'])
 
 const posts = ref([])
 const isUnsupportedQuery = ref(false)
@@ -44,8 +42,20 @@ const isLoading = ref(false)
 var pageIndex = 0
 var pageLimit = 20
 var currentQuery = ""
+var articleType = ""
 
 const options = [
+    {
+        name: "🕗 게시일",
+        options: [
+            {
+                name: "👇 최신 순"
+            },
+            {
+                name: "👆 오래된 순"
+            }
+        ]
+    },
     {
         name: "🔥 인기"
     },
@@ -105,17 +115,6 @@ const options = [
             }
         ]
     },
-    {
-        name: "🕗 게시일",
-        options: [
-            {
-                name: "👇 최신 순"
-            },
-            {
-                name: "👆 오래된 순"
-            }
-        ]
-    }
 ]
 
 const updatePosts = async (query) => {
@@ -146,21 +145,25 @@ const onQueryChanged = async (query) => {
 const queryTable = {
     "🕗 게시일_👇 최신 순": async () => {
         const result = await axios.get(`/api/forumArticles?articleSorts=Added&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
     "🕗 게시일_👆 오래된 순": async () => {
         const result = await axios.get(`/api/forumArticles?articleSorts=Added&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
     "🔥 인기": async () => {
         const result = await axios.get(`/api/forumArticles?articleSorts=Hot&pageIndex=${pageIndex}&pageLimit=${pageLimit}&hotLikesThreshold=1`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
     "💬 댓글_👇 댓글 많은 순_🕗 전체": async () => {
         const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
@@ -168,6 +171,7 @@ const queryTable = {
         let d = new Date()
         d.setDate(d.getDate() - 7)
         const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
@@ -175,6 +179,7 @@ const queryTable = {
         let d = new Date()
         d.setDate(d.getDate() - 30)
         const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
@@ -182,11 +187,13 @@ const queryTable = {
         let d = new Date()
         d.setDate(d.getDate() - 365)
         const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
     "💬 댓글_👆 댓글 적은 순_🕗 전체": async () => {
         const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
@@ -194,6 +201,7 @@ const queryTable = {
         let d = new Date()
         d.setDate(d.getDate() - 7)
         const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
@@ -201,6 +209,7 @@ const queryTable = {
         let d = new Date()
         d.setDate(d.getDate() - 30)
         const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
@@ -208,11 +217,13 @@ const queryTable = {
         let d = new Date()
         d.setDate(d.getDate() - 365)
         const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
     "🏆 탑_🕗 전체": async () => {
         const result = await axios.get(`/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
@@ -220,6 +231,7 @@ const queryTable = {
         let d = new Date()
         d.setDate(d.getDate() - 7)
         const result = await axios.get(`/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
@@ -227,6 +239,7 @@ const queryTable = {
         let d = new Date()
         d.setDate(d.getDate() - 30)
         const result = await axios.get(`/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
@@ -234,6 +247,7 @@ const queryTable = {
         let d = new Date()
         d.setDate(d.getDate() - 365)
         const result = await axios.get(`/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+            + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
@@ -248,6 +262,8 @@ const fetchUserData = async (posts) => {
     return posts
 }
 onMounted(async () => {
+    articleType = props.articleType ?? 'null'
+
     if (route.query.query !== undefined) {
         await updatePosts(route.query.query.split('_'))
     }

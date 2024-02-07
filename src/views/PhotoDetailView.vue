@@ -1,6 +1,7 @@
 <template>
-    <div class="flex flex-col p-4 gap-6">
-        <img :src="photo.largeUrl" class="w-full">
+    <Skeleton v-if="isLoading" />
+    <div v-else class="flex flex-col p-4 gap-6">
+        <img :src="photo.largeUrl" class=" max-h-[450px] object-contain bg-gray-100 overflow-y-auto" @click="enlarged = !enlarged">
         <SectionHeader content="✍️ 제목과 설명" />
         <div class="flex flex-col gap-2">
 
@@ -9,7 +10,7 @@
         </div>
         <SectionHeader content="👨‍💻 업로더" />
         <div class="flex gap-2 items-center">
-            <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
+            <img :src="photo.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
                 class="w-10 h-10 rounded-full object-cover">
             <div class="flex flex-col justify-between">
                 <h3>{{ photo.user?.userName ?? '' }}</h3>
@@ -17,7 +18,7 @@
             </div>
         </div>
         <SectionHeader content="💽 사진 정보" />
-        <PhotoExifPanel v-if="photo.exifTags" :exif="photo.exifTags" />
+        <PhotoExifPanel v-if="photo.exifTags" :exif="photo.exifTags" class="max-w-[450px]"/>
         <SectionHeader content="📝 이 사진이 포함된 게시글" />
         <PostVList :posts="relatedPosts" />
         <SectionHeader content="📷 비슷한 사진들" />
@@ -27,6 +28,12 @@
                     class="w-20 h-20 rounded-md object-cover cursor-auto">
             </li>
         </ul>
+    </div>
+    <div v-if="enlarged" @click="enlarged = false" class="fixed w-screen h-screen top-0 left-0 z-30">
+        <div class="w-full h-full absolute bg-black opacity-80">
+        </div>
+        <PhotoExifPanel v-if="photo.exifTags" :exif="photo.exifTags" class="absolute left-1/2 -translate-x-[50%] bottom-0 w-4/5 sm:max-w-[450px] z-50 mb-8"/>
+        <img :src="photo.largeUrl" class="w-full h-full object-contain relative z-40" @click="enlarged = !enlarged">
     </div>
 </template>
 <script setup>
@@ -38,11 +45,15 @@ import PhotoExifPanel from '@/components/PhotoExifPanel.vue';
 import PhotoVList from '@/components/PhotoVList.vue';
 import PostVList from '@/components/PostVList.vue';
 import SectionHeader from '@/components/SectionHeader.vue';
+import Skeleton from '@/components/Skeleton.vue';
+import ModalWrapperView from './ModalWrapperView.vue';
 
 const route = useRoute()
 const router = useRouter()
 
 const photo = ref({});
+const enlarged = ref(false);
+const isLoading = ref(true);
 const relatedPosts = ref([]);
 const relatedPhotos = ref([]);
 
@@ -54,34 +65,32 @@ watch(
 );
 
 const fetchData = async () => {
-    // make them run in parallel
-    (async () => {
-        let result = await axios.get(`/api/photos/${route.params.id}?breakpoints=Large&includeEmbedding=false`)
-        let user = await axios.get(`/api/users/${result.data.uploaderId}`)
-        photo.value = result.data
-        photo.value.user = user.data
+    let result = await axios.get(`/api/photos/${route.params.id}?breakpoints=Large&includeEmbedding=false`)
+    let user = await axios.get(`/api/users/${result.data.uploaderId}`)
+    photo.value = result.data
+    photo.value.user = user.data
 
-        result = await axios.get(`/api/forumArticles?photoId=${result.data.id}&PageLimit=5&articleSorts=Added&isDescending=true`)
-        result = await Promise.all(result.data.map(async (article) => {
-            article.username = await axios.get(`/api/users/${article.authorId}`).then((res) => res.data.userName)
-            return article
-        }))
-        relatedPosts.value = result
-    })();
+    result = await axios.get(`/api/forumArticles?photoId=${result.data.id}&PageLimit=5&articleSorts=Added&isDescending=true`)
+    result = await Promise.all(result.data.map(async (article) => {
+        article.user = (await axios.get(`/api/users/${article.authorId}`)).data
+        return article
+    }))
+    relatedPosts.value = result
 
-    (async () => {
-        let related = await axios.get(`/api/searchPhotos/${route.params.id}`)
-        related.data = related.data.filter((id) => id !== route.params.id)
-        related = await Promise.all(related.data.map(async (id) => {
-            let photo = await axios.get(`/api/photos/${id}?breakpoints=Thumbnail&includeEmbedding=false`)
-            return photo.data
-        }
-        ))
-        relatedPhotos.value = related
-    })();
+
+    let related = await axios.get(`/api/searchPhotos/${route.params.id}`)
+    related.data = related.data.filter((id) => id !== route.params.id)
+    related = await Promise.all(related.data.map(async (id) => {
+        let photo = await axios.get(`/api/photos/${id}?breakpoints=Thumbnail&includeEmbedding=false`)
+        return photo.data
+    }
+    ))
+    relatedPhotos.value = related
+
 }
 
 onMounted(async () => {
     await fetchData()
+    isLoading.value = false
 })
 </script>

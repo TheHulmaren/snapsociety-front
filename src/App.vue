@@ -9,6 +9,7 @@ import DailyUpdateLabel from './components/DailyUpdateLabel.vue'
   <div class=" max-w-4xl bg-white border-x-stroke-light border-x-0.5 mx-auto min-h-screen">
     <header class="w-full sticky top-0 z-20">
       <AppBar class=" bg-white shadow-md" />
+      <DailyUpdateLabel />
     </header>
     <main>
       <RouterView />

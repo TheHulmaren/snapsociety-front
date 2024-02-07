@@ -1,18 +1,9 @@
 <template>
-    <div class="w-full text-center">
-        <div class=" py-2 px-4 w-full overflow-y-scroll aspect-[21/9] rounded-2xl border-main border-0.5 text-sm font-semibold leading-loose">
-            👋 여러분 즐겁게 이용중이신가요?ㅎㅎ<br> 🕑이번주 목요일 자정부터 금요일 아침 6시 까지는 사이트 업데이트가 예정되어 있습니다.<br>
-            따라서 해당 시간동안 사이트 접속이 ❌불가능하며, 이후에는 새롭게 추가된 기능들을 확인하실 수 있습니다.<br>
-            아울러 버그 사항들에 대한 수정도 이루어질 예정입니다.<br>
-            자세한 사항은 "개발 블로그" 게시판을 참고해주세요 😁
-            <br>
-            asdasdas
-             버그 사항들에 대한 수정도 이루어질 예정입니다.<br>
-            자세한 사항은 "개발 블로그" 게시판을 참고해주세요 😁
-            <br>
-            asdasdas
-        </div>
-    </div>
+    <MarqueeText class="bg-main text-white text-xs font-semibold py-2" :duration="70">
+        <div v-html="html"></div>
+    </MarqueeText>
 </template>
-<script>
+<script setup>
+import MarqueeText from 'vue-marquee-text-component'
+const html = '🛠️ 이번 주 ⏱️<u>목요일 자정부터 금요일 오전 6시</u> 까지는 점검 및 업데이트가 있을 예정입니다. 따라서 해당 시간에는 사이트 이용이 불가하며, 이점 양해 부탁드릴게요😅. 이후 더 나은 서비스로 찾아뵙겠습니다. 감사합니다.😊//'
 </script>

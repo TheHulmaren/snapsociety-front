@@ -1,9 +1,8 @@
 <template>
     <div class="flex flex-col gap-4 py-4">
-        <!-- <DailyUpdateLabel /> -->
         <div class="flex flex-col gap-2 px-4">
             <ul class="flex gap-2 flex-wrap">
-                <DefaultButton class="grow" v-for="tab in tabs" :key="tab.slug" :content="tab.name" :is-selected="selectedTabSlug === tab.slug" @click="onTabClick(tab)" />
+                <DefaultButton class="grow" v-for="tab in tabs" :type="tab.buttonType" :key="tab.slug" :content="tab.name" :is-selected="selectedTabSlug === tab.slug" @click="onTabClick(tab)" />
             </ul>
         </div>
         <RouterView :key="route.fullPath" />
@@ -42,51 +41,58 @@ const onTabClick = (tab) => {
 const tabs = [
     {
         name: "🚀 사진 모아보기",
-        slug: "photos"
+        slug: "photos",
+        buttonType: "primary"
     },
     {
         name: "🌄 사진과 글",
         slug: "posts",
+        buttonType: "primary"
     },
     {
         name: "💁‍♂️ 글 모아보기",
-        slug: "board"
+        slug: "all",
+        buttonType: "primary"
     },
     {
         name: "💡 정보글 & 팁",
-        slug: "tips"
+        slug: "tips",
+        buttonType: "disabled"
     },
     {
         name: "🙋 질문 & 답변",
-        slug: "ask"
+        slug: "ask",
+        buttonType: "primary"
     },
     {
         name: "🏆 컨테스트",
-        slug: "contest"
-    },
-    {
-        name: "🤣 유우머",
-        slug: "humor"
+        slug: "contest",
+        buttonType: "disabled"
     },
     {
         name: "😄 잡담",
-        slug: "casual"
+        slug: "casual",
+        buttonType: "primary"
     },
     {
         name: "🙋‍♂️ 토론 & 투표",
-        slug: "agora"
+        slug: "agora",
+        buttonType: "disabled"
     },
     {
         name: "📷💰 박스추 & 장비 자랑",
-        slug: "gear"
+        slug: "gear",
+        buttonType: "primary"
     },
     {
         name: "➡️👨‍💻 개발자에게",
-        slug: "to-dev"
+        slug: "to-dev",
+        buttonType: "primary"
     },
     {
         name: "⬅️👨‍💻 개발자로부터",
-        slug: "from-dev"
+        slug: "from-dev",
+        buttonType: "primary"
     },
 ]
 

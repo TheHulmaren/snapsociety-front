@@ -26,6 +26,42 @@ const router = createRouter({
         {
           path: "posts",
           name: "main-posts",
+          props: () => ({ articleType: "photo" }),
+          component: () => import("../views/PostQueryView.vue"),
+        },
+        {
+          path: "all",
+          name: "main-all",
+          component: () => import("../views/PostQueryView.vue"),
+        },
+        {
+          path: "ask",
+          name: "main-ask",
+          props: () => ({ articleType: "ask" }),
+          component: () => import("../views/PostQueryView.vue"),
+        },
+        {
+          path: "casual",
+          name: "main-casual",
+          props: () => ({ articleType: "casual" }),
+          component: () => import("../views/PostQueryView.vue"),
+        },
+        {
+          path: "gear",
+          name: "main-gear",
+          props: () => ({ articleType: "gear" }),
+          component: () => import("../views/PostQueryView.vue"),
+        },
+        {
+          path: "from-dev",
+          name: "main-from-dev",
+          props: () => ({ articleType: "from-dev" }),
+          component: () => import("../views/PostQueryView.vue"),
+        },
+        {
+          path: "to-dev",
+          name: "main-to-dev",
+          props: () => ({ articleType: "to-dev" }),
           component: () => import("../views/PostQueryView.vue"),
         },
         {
@@ -61,7 +97,7 @@ const router = createRouter({
         {
           path: "post/:id",
           name: "edit-post",
-          props: (route) => ({ mode: "edit", id: route.params.id}),
+          props: (route) => ({ mode: "edit", id: route.params.id }),
           component: () => import("../views/PostUploadView.vue"),
         },
       ],
@@ -84,13 +120,15 @@ const router = createRouter({
     {
       path: "/user/:id",
       name: "user-profile",
-      redirect: (to) => { return { path: "/user/" + to.params.id + "/photos" } },
+      redirect: (to) => {
+        return { path: "/user/" + to.params.id + "/photos" };
+      },
       component: () => import("../views/UserProfileView.vue"),
       children: [
         {
           path: "photos",
           name: "user-photos",
-          props: (route) => ({ uploaderId: route.params.id }),
+          props: (route) => ({ uploaderId: route.params.id, defaultQuery: "🕗 업로드_👇 최신 순"}),
           component: () => import("../views/PhotoQueryView.vue"),
         },
         {
@@ -107,7 +145,7 @@ const router = createRouter({
         {
           path: "liked-posts",
           name: "user-liked-posts",
-          component: () => import("../views/PostQueryView.vue"), 
+          component: () => import("../views/PostQueryView.vue"),
         },
         {
           path: "comments",
@@ -148,7 +186,7 @@ const router = createRouter({
       path: "/banned",
       name: "banned",
       component: () => import("../views/BannedView.vue"),
-    }
+    },
   ],
 });
 
@@ -157,13 +195,16 @@ router.beforeEach(async (to, from) => {
   if (to.name !== "login" && !(await AuthHelper.checkIfAuthed())) {
     return { name: "login" };
   }
-  
+
   // Redirect to ban page if banned
   // but allow logging out and settings
-  if (!["userSettings", "banned", "login"].includes(to.name) && (await AuthHelper.checkIfBanned(AuthHelper.getUser().id)).isBanned) {
+  if (
+    !["userSettings", "banned", "login"].includes(to.name) &&
+    (await AuthHelper.checkIfBanned(AuthHelper.getUser().id)).isBanned
+  ) {
     return { name: "banned" };
   }
-  return true
+  return true;
 });
 
 export default router;
