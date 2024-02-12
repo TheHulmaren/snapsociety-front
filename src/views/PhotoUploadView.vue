@@ -87,6 +87,8 @@ const onUploadClick = async () => {
             let uploaded = await axios.post("/api/photos/preUpload", formData)
             uploadedId.push(uploaded.data.id)
 
+            console.log(uploaded.data)
+
             let request = {
                 "id": uploaded.data.id,
                 "lensId": uploaded.data.lensId,

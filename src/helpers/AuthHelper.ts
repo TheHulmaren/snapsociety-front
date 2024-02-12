@@ -54,7 +54,6 @@ export class AuthHelper {
         };
       }
     }catch(e){
-      console.log(e);
     }
     return {
       isBanned: false

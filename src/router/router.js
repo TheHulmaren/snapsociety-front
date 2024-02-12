@@ -140,12 +140,14 @@ const router = createRouter({
         {
           path: "liked-photos",
           name: "user-liked-photos",
-          component: () => import("../views/PhotoQueryView.vue"),
+          props: (route) => ({ userId: route.params.id }),
+          component: () => import("../views/UserLikedPhotosView.vue"),
         },
         {
           path: "liked-posts",
           name: "user-liked-posts",
-          component: () => import("../views/PostQueryView.vue"),
+          props: (route) => ({ userId: route.params.id }),
+          component: () => import("../views/UserLikedPostsView.vue"),
         },
         {
           path: "comments",

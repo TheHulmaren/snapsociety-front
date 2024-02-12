@@ -3,7 +3,10 @@
         <div class="flex">
             <QueryParamsBuilder :initial="route.query.query?.split('_')" :option-tree="options"
                 @query-changed="onQueryChanged" class="grow" />
-            <DefaultButton class="ml-2 mr-4" :content="layout === 'vertical' ? '수직' : '블록형'" @click="onLayoutToggle" />
+            <!-- <button @click="onLayoutToggle"
+                class="flex items-center justify-center text-xs px-4 py-1 rounded-full border-gray-500 border-0.5 mr-4">
+                <span class="material-icons">{{ layout === "vertical" ? "수직" : "블록" }}</span>
+            </button> -->
         </div>
         <div v-if="isUnsupportedQuery" class="flex flex-col items-center my-10 gap-2">
             <span class="font-semibold text-2xl text-main">🙏 Sorry..</span>
@@ -28,6 +31,7 @@
 import axios from 'axios';
 import { ref, defineEmits, onMounted, defineProps } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { AuthHelper } from '@/helpers/AuthHelper';
 
 import QueryParamsBuilder from '@/components/QueryParamsBuilder.vue';
 import PhotoVList from '../components/PhotoVList.vue';
@@ -110,6 +114,7 @@ const updatePhotos = async (query) => {
     emit('queryChanged', query)
     let result = await queryTable[currentQuery]();
     result = await fetchUserData(result);
+    result = await fetchLikeInfo(result);
 
     if (result.length === 0) {
         isEmpty.value = true
@@ -181,6 +186,17 @@ const fetchUserData = async (photos) => {
     await Promise.all(photos.map(async (photo) => {
         let result = await axios.get(`/api/users/${photo.uploaderId}`);
         photo.user = result.data;
+    }));
+
+    return photos
+}
+
+const fetchLikeInfo = async (photos) => {
+    await Promise.all(photos.map(async (photo) => {
+        let result = await axios.get(`/api/likes/countLikes/photos/${photo.id}`);
+        photo.likeCount = result.data;
+        result = await axios.get(`/api/likes/checkIfLiked/photos/${photo.id}/user/${AuthHelper.getUser().id}`);
+        photo.isLikedByCurrentUser = result.data;
     }));
 
     return photos

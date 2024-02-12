@@ -32,18 +32,17 @@ const isLiked = ref(false)
 
 const onLikeClicked = async () => {
     if (isLiked.value) {
-        let result = await axios.delete(`/api/photos/${props.photo.id}/like`)
-        props.photo.likeCount = result.data.count
+        let result = await axios.post(`/api/likes/decrementLikes/photos/${props.photo.id}/user/${AuthHelper.getUser().id}`)
+        props.photo.likeCount = result.data.likeCount
         isLiked.value = false
         return
     }
-    let result = await axios.post(`/api/photos/${props.photo.id}/like`)
-    props.photo.likeCount = result.data.count
+    let result = await axios.post(`/api/likes/incrementLikes/photos/${props.photo.id}/user/${AuthHelper.getUser().id}`)
+    props.photo.likeCount = result.data.likeCount
     isLiked.value = true
 }
 
 onMounted(async () => {
-    console.log(props.photo)
     isLiked.value = props.photo.isLikedByCurrentUser
 })
 </script>

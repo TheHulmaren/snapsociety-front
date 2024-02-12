@@ -23,7 +23,7 @@
         <div class="flex flex-col px-4">
             <ul class="flex gap-2 flex-wrap">
                 <DefaultButton class="grow" v-for="tab in tabs" :key="tab.slug" :content="tab.name"
-                    :is-selected="selectedTabSlug === tab.slug" @click="router.push(`/user/${user.id}/${tab.slug}`)" />
+                    :is-selected="selectedTabSlug === tab.slug" @click="router.push(`/user/${user.id}/${tab.slug}`); selectedTabSlug = tab.slug" />
             </ul>
         </div>
         <RouterView class="" :key="route.fullPath" />
@@ -65,10 +65,6 @@ const tabs = [
     {
         name: "❤️ 좋아요한 게시글",
         slug: "liked-posts"
-    },
-    {
-        name: "💬 작성한 댓글",
-        slug: "comments"
     }
 ]
 

@@ -51,7 +51,6 @@ const fetchPhotoThumbails = async () => {
         return res.data.thumbnailUrl
     }))
     photoThumbnails.value = result
-    console.log(photoThumbnails.value)
 }
 
 const fetchCommentCount = async () => {

@@ -268,13 +268,13 @@ const onPostEdit = async () => {
 
 const onLikeClicked = async () => {
     if (post.value.isLikedByCurrentUser) {
-        let result = await axios.delete(`/api/forumArticles/${route.params.id}/like`)
-        post.value.likeCount = result.data.count
+        let result = await axios.post(`/api/likes/decrementLikes/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
+        post.value.likeCount = result.data.likeCount
         post.value.isLikedByCurrentUser = false
         return
     }
-    let result = await axios.post(`/api/forumArticles/${route.params.id}/like`)
-    post.value.likeCount = result.data.count
+    let result = await axios.post(`/api/likes/incrementLikes/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
+    post.value.likeCount = result.data.likeCount
     post.value.isLikedByCurrentUser = true
 }
 
@@ -424,6 +424,12 @@ onMounted(async () => {
 
     result = await axios.get(`/api/comments/count?articleId=${route.params.id}`)
     commentCount.value = result.data
+
+    result = await axios.get(`/api/likes/countLikes/articles/${route.params.id}`)
+    post.value.likeCount = result.data
+
+    result = await axios.get(`/api/likes/checkIfLiked/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
+    post.value.isLikedByCurrentUser = result.data
 
     // update view count
     result = await axios.post(`/api/forumArticles/${route.params.id}/view`)

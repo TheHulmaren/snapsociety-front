@@ -24,6 +24,7 @@
 import axios from 'axios';
 import { ref, watch, defineEmits, defineProps, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { AuthHelper } from '@/helpers/AuthHelper';
 import QueryParamsBuilder from '@/components/QueryParamsBuilder.vue';
 import PostVList from '../components/PostVList.vue';
 import Skeleton from '@/components/Skeleton.vue';
@@ -133,6 +134,7 @@ const updatePosts = async (query) => {
     emit('queryChanged', query)
     let result = await queryTable[currentQuery]();
     result = await fetchUserData(result);
+    result = await fetchLikeInfo(result);
     posts.value.push(...result)
     isLoading.value = false
 }
@@ -261,6 +263,18 @@ const fetchUserData = async (posts) => {
 
     return posts
 }
+
+const fetchLikeInfo = async (posts) => {
+    await Promise.all(posts.map(async (post) => {
+        let result = await axios.get(`/api/likes/countLikes/articles/${post.id}`);
+        post.likeCount = result.data;
+        result = await axios.get(`/api/likes/checkIfLiked/articles/${post.id}/user/${AuthHelper.getUser().id}`);
+        post.isLikedByCurrentUser = result.data;
+    }));
+
+    return posts
+}
+
 onMounted(async () => {
     articleType = props.articleType ?? 'null'
 
