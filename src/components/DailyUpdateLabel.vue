@@ -1,6 +1,7 @@
 <template>
     <MarqueeText class="bg-main text-white text-xs font-semibold py-2" :duration="70">
-        <div v-html="html"></div>
+        <span class="rounded-full bg-blue-600 text-white text-[11px] font-semibold px-2 py-0.5 mx-2">알림</span>
+        📸스냅 소사이어티의 베타테스트에 참여해주셔서 정말 감사합니다😊. 현 베타테스트는 이번주 금요일 자정까지 진행될 예정이며, 정식 오픈🎊 이후에도 여러분께서 작성하신 글이나 사진들은 모두 보관되어 계속해서 이용하실 수 있습니다. 즐거운 하루 되세요!!🎉
     </MarqueeText>
 </template>
 <script setup>
