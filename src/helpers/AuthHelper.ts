@@ -13,6 +13,7 @@ export class AuthHelper {
 
     // Check if Access Token exists first.
     if (accessToken == null || accessToken == "undefined") {
+      console.log("No Access Token");
       this.clearTokens();
       return false;
     }
@@ -21,6 +22,7 @@ export class AuthHelper {
     try {
       decodedPayload = this.parseJwt(accessToken);
     } catch (e) {
+      console.log("Cannot decode Access Token");
       this.clearTokens();
       return false;
     }
@@ -32,6 +34,7 @@ export class AuthHelper {
       const refreshed = await this.getRefreshedToken();
 
       if (refreshed == null) {
+        console.log("Failed to refresh Access Token");
         this.clearTokens();
         return false;
       }
