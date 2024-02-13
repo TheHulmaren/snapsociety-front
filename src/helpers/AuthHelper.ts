@@ -68,6 +68,7 @@ export class AuthHelper {
         password,
       });
     } catch (e) {
+      console.log(e);
       return null;
     }
 
