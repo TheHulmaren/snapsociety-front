@@ -12,14 +12,11 @@
 import { AuthHelper } from '@/helpers/AuthHelper';
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { loadEnv } from 'vite'
 
 const router = useRouter()
 
 const id = ref("");
 const password = ref("");
-
-process.env = { ...process.env, ...loadEnv(mode, process.cwd(), '') };
 
 const onLoginSubmit = async () =>{
     console.log("Attempt to login")
