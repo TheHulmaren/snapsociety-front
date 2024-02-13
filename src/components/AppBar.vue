@@ -4,7 +4,7 @@
             Snap 📸<br>Society
         </h1>
         <form @submit.prevent="router.push('/search-photo?query=' + searchQuery)" class="grow">
-            <input v-model="searchQuery" placeholder="🔍   사진을 간략히 묘사해 주세요.."
+            <input v-model="searchQuery" placeholder="🔍   사진을 (영어로) 묘사해 주세요"
                 class="py-2 px-4 rounded-full w-full bg-button-back-light border-0.5 border-stroke-light text-xs font-normal text-text-searchbar" />
         </form>
         <div class="relative">
@@ -16,7 +16,7 @@
                 Login
             </button>
             <div
-                class="flex absolute top-100 right-0 rounded-xl bg-white shadow-md border-stroke-light border mt-2 transition-all">
+                class="flex absolute top-100 right-0 rounded-xl bg-white shadow-md border-stroke-light border mt-2 transition-all z-50">
                 <ProfileActions v-if="isAuthed && showProfileActions" @on-select="showProfileActions = false" />
             </div>
         </div>

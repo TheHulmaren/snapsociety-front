@@ -5,10 +5,9 @@
             @click="enlarged = !enlarged">
         <div class="flex justify-between items-center">
             <SectionHeader content="✍️ 제목과 설명" />
-            <div v-if="photo.uploaderId === AuthHelper.getUser().id 
-            || AuthHelper.getUser().roles.includes('Admin') 
-            || AuthHelper.getUser().roles.includes('Mod')"
-                class="flex gap-4 text-xs text-gray-500">
+            <div v-if="photo.uploaderId === AuthHelper.getUser().id
+                || AuthHelper.getUser().roles.includes('Admin')
+                || AuthHelper.getUser().roles.includes('Mod')" class="flex gap-4 text-xs text-gray-500">
                 <button @click="showEdit = !showEdit">수정</button>
                 <button @click="onDelete" class="text-red-500">삭제</button>
             </div>
@@ -23,7 +22,7 @@
             <h3>{{ photo.desc }}</h3>
         </div>
         <SectionHeader content="👨‍💻 업로더" />
-        <div class="flex gap-2 items-center">
+        <div @click="router.push('/user/' + photo.user.id)" class="flex gap-2 items-center cursor-pointer">
             <img :src="photo.user?.profilePhotoUrl ?? '/default-prof-img.webp'" class="w-10 h-10 rounded-full object-cover">
             <div class="flex flex-col justify-between">
                 <h3>{{ photo.user?.userName ?? '' }}</h3>

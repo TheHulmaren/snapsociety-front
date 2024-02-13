@@ -14,11 +14,11 @@
                     class="text-sm py-1 px-2 rounded-full bg-green-600 text-white font-semibold text-nowrap">{{
                         articleType.titleBefore
                     }}</span> {{ post.title }}</h2>
-            <div class="flex text-xs gap-2 items-stretch">
-                <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
+            <div @click="router.push('/user/' + post.authorId)" class="flex text-xs gap-2 items-stretch cursor-pointer">
+                <img :src="post.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
                     class="w-10 h-10 rounded-full object-cover">
                 <div class="flex flex-col justify-around font-semibold">
-                    <h3>{{ post.username }}</h3>
+                    <h3>{{ post.user?.userName }}</h3>
                     <span class="text-xs text-gray-600">{{ TimeHelper.timeSince(new Date(post.createdAtUtc)) }}</span>
                 </div>
             </div>
@@ -31,7 +31,7 @@
             </div>
             <div v-else class="flex flex-col gap-2 items-center" v-for="photo in photos" :key="photo.id">
                 <PhotoVCard :photo="photo" />
-                <PhotoExifPanel :exif="photo.exifTags"  class="w-full sm:w-[450px]"/>
+                <PhotoExifPanel :exif="photo.exifTags" class="w-full sm:w-[450px]" />
                 <p>{{ photo.caption }}</p>
             </div>
         </ul>
@@ -50,8 +50,9 @@
         <ul class="flex flex-col gap-2">
             <li class="relative flex flex-col gap-2" v-for="comment in comments" :key="comment.id">
                 <div class="flex gap-2 items-start">
-                    <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
-                        class="w-5 h-5 object-cover rounded-full">
+                    <img :src="comment.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
+                        @click="router.push('/user/' + comment.authorId)"
+                        class="w-5 h-5 object-cover rounded-full cursor-pointer">
                     <div class="flex flex-col gap-2 grow">
                         <div class="flex gap-2 items-center">
                             <span v-if="AuthHelper.getUser().id === comment.authorId"
@@ -59,7 +60,7 @@
                             <span v-else-if="comment.authorId === post.authorId"
                                 class="font-semibold bg-blue-500 text-white rounded-full text-[11px] px-2">글</span>
                             <h3 class=" text-xs font-semibold">{{
-                                comment.username }}</h3>
+                                comment.user?.userName }}</h3>
                             <span class="text-xs">{{ TimeHelper.timeSince(new Date(comment.createdAtUtc)) }}</span>
                             <div class="grow"></div>
                             <div class="flex gap-4">
@@ -92,8 +93,9 @@
                 <ul class="flex flex-col gap-2 pl-6">
                     <li class="relative flex flex-col gap-2" v-for="reply in comment.replies" :key="reply.id">
                         <div class="flex gap-2 items-start">
-                            <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
-                                class="w-4 h-4 object-cover rounded-full">
+                            <img :src="reply.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
+                                @click="router.push('/user/' + comment.authorId)"
+                                class="w-4 h-4 object-cover rounded-full cursor-pointer">
                             <div class="flex flex-col gap-2 grow">
                                 <div class="flex gap-2 items-center">
                                     <span v-if="AuthHelper.getUser().id === reply.authorId"
@@ -101,7 +103,7 @@
                                     <span v-else-if="reply.authorId === post.authorId"
                                         class="font-semibold bg-blue-500 text-white rounded-full text-[11px] px-2">글</span>
                                     <h3 class=" text-xs font-semibold">{{
-                                        reply.username }}</h3>
+                                        reply.user?.userName }}</h3>
                                     <span class="text-xs">{{ TimeHelper.timeSince(new Date(reply.createdAtUtc)) }}</span>
                                     <div class="grow"></div>
                                     <div class="flex gap-4">
@@ -391,7 +393,7 @@ const updateComments = async () => {
 onMounted(async () => {
     isLoading.value = true
     let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles/${route.params.id}`)
-    result.data.username = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${result.data.authorId}`).then((result) => result.data.userName)
+    result.data.user = (await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${result.data.authorId}`)).data
     post.value = result.data
 
     articleType.value = articleTypes.filter((t) => t.slug === post.value.articleTypeId)[0]
@@ -412,10 +414,10 @@ onMounted(async () => {
     console.log(result.data)
 
     await Promise.all(result.data.map(async (comment) => {
-        comment.username = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${comment.authorId}`).then((result) => result.data.userName)
+        comment.user = (await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${comment.authorId}`)).data
         comment.replies = (await axios.get(`${import.meta.env.VITE_API_URL}/api/comments/${comment.id}/replies`)).data
         comment.replies = await Promise.all(comment.replies.map(async (reply) => {
-            reply.username = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${reply.authorId}`).then((result) => result.data.userName)
+            reply.user = (await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${reply.authorId}`)).data
             return reply
         }))
     }))
