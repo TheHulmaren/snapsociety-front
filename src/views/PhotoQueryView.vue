@@ -230,7 +230,6 @@ onMounted(async () => {
 
         if (listBottom <= screenBottom + 50 && !reachedEnd.value && !isLoading.value) {
             pageIndex++
-            isLoading.value = true
             let result = await queryTable[currentQuery]();
             if (result.length === 0) {
                 reachedEnd.value = true
@@ -245,7 +244,6 @@ onMounted(async () => {
                 photos.value.push(...result)
             }
             console.log(photos.value)
-            isLoading.value = false
         }
     })
 })
