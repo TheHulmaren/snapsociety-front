@@ -195,6 +195,7 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   // Redirect to login if not authed
   if (to.name !== "login" && !(await AuthHelper.checkIfAuthed())) {
+    console.log("not authed");
     return { name: "login" };
   }
 
