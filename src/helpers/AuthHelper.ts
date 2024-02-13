@@ -42,7 +42,7 @@ export class AuthHelper {
 
   static async checkIfBanned(id: string) {
     try{
-      let result = await axios.get(`/api/users/${id}/ban`);
+      let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${id}/ban`);
       let unbanDate = new Date(result.data.unbannedAtUtc);
       if(unbanDate > new Date()){
         return {
@@ -63,7 +63,7 @@ export class AuthHelper {
   static async signIn(id: string, password: string) {
     var response;
     try {
-      response = await this.authAxios.post("/api/auth/signIn", {
+      response = await this.authAxios.post(import.meta.env.VITE_API_URL + "/api/auth/signIn", {
         id,
         password,
       });
@@ -92,7 +92,7 @@ export class AuthHelper {
     }
 
     try {
-      var response = await this.authAxios.post("/api/auth/refreshToken", {
+      var response = await this.authAxios.post(import.meta.env.VITE_API_URL + "/api/auth/refreshToken", {
         refreshToken,
         accessToken,
       });

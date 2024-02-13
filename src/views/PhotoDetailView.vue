@@ -85,7 +85,7 @@ watch(
 );
 
 const onEdit = async () => {
-    await axios.put(`/api/photos/${route.params.id}`, {
+    await axios.put(`${import.meta.env.VITE_API_URL}/api/photos/${route.params.id}`, {
         id: photo.value.id,
         lensId: photo.value.lensId,
         title: titleEdit.value,
@@ -102,30 +102,30 @@ const onEdit = async () => {
 
 const onDelete = async () => {
     if (!confirm("🛑 정말로 삭제하시겠습니까?")) return
-    await axios.delete(`/api/photos/${route.params.id}`)
+    await axios.delete(`${import.meta.env.VITE_API_URL}/api/photos/${route.params.id}`)
     router.push({ name: 'home' })
 }
 
 const fetchData = async () => {
-    let result = await axios.get(`/api/photos/${route.params.id}?breakpoints=Large&includeEmbedding=false`)
-    let user = await axios.get(`/api/users/${result.data.uploaderId}`)
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos/${route.params.id}?breakpoints=Large&includeEmbedding=false`)
+    let user = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${result.data.uploaderId}`)
     photo.value = result.data
     titleEdit.value = result.data.title
     descEdit.value = result.data.desc
     photo.value.user = user.data
 
-    result = await axios.get(`/api/forumArticles?photoId=${result.data.id}&PageLimit=5&articleSorts=Added&isDescending=true`)
+    result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?photoId=${result.data.id}&PageLimit=5&articleSorts=Added&isDescending=true`)
     result = await Promise.all(result.data.map(async (article) => {
-        article.user = (await axios.get(`/api/users/${article.authorId}`)).data
+        article.user = (await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${article.authorId}`)).data
         return article
     }))
     relatedPosts.value = result
 
 
-    let related = await axios.get(`/api/searchPhotos/${route.params.id}`)
+    let related = await axios.get(`${import.meta.env.VITE_API_URL}/api/searchPhotos/${route.params.id}`)
     related.data = related.data.filter((id) => id !== route.params.id)
     related = await Promise.all(related.data.map(async (id) => {
-        let photo = await axios.get(`/api/photos/${id}?breakpoints=Thumbnail&includeEmbedding=false`)
+        let photo = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos/${id}?breakpoints=Thumbnail&includeEmbedding=false`)
         return photo.data
     }
     ))

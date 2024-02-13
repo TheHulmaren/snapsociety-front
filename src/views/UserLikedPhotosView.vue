@@ -19,11 +19,11 @@ const isLoading = ref(true);
 const router = useRouter();
 
 onMounted(async () => {
-    var result = await axios.get(`/api/likes/getLikedList/photos/user/${props.userId}?breakpoints=medium`);
+    var result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/getLikedList/photos/user/${props.userId}?breakpoints=medium`);
     await Promise.all(result.data.map(async (photo) => {
-        let user = await axios.get(`/api/users/${photo.uploaderId}`);
-        let likeCount = await axios.get(`/api/likes/countLikes/photos/${photo.id}`);
-        let isLikedByCurrentUser = await axios.get(`/api/likes/checkIfLiked/photos/${photo.id}/user/${router.currentRoute.value.params.id}`);
+        let user = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${photo.uploaderId}`);
+        let likeCount = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/countLikes/photos/${photo.id}`);
+        let isLikedByCurrentUser = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/checkIfLiked/photos/${photo.id}/user/${router.currentRoute.value.params.id}`);
         photo.user = user.data;
         photo.likeCount = likeCount.data;
         photo.isLikedByCurrentUser = isLikedByCurrentUser.data;

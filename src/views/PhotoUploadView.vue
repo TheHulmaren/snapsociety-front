@@ -84,7 +84,7 @@ const onUploadClick = async () => {
         await Promise.all(imageFiles.value.map(async (file) => {
             let formData = new FormData();
             formData.append("photo", file.data)
-            let uploaded = await axios.post("/api/photos/preUpload", formData)
+            let uploaded = await axios.post(import.meta.env.VITE_API_URL + "/api/photos/preUpload", formData)
             uploadedId.push(uploaded.data.id)
 
             console.log(uploaded.data)
@@ -100,14 +100,14 @@ const onUploadClick = async () => {
                 "s3LargeKey": uploaded.data.s3LargeKey,
                 "isPreUploaded": false
             }
-            await axios.put(`/api/photos/${uploaded.data.id}`, request)
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/photos/${uploaded.data.id}`, request)
         }))
         alert("📁🛜 Successfully uploaded images")
         router.push("/")
     }
     catch {
         await Promise.all(uploadedId.map(async (id) => {
-            await axios.delete(`/api/photos/${id}`)
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/photos/${id}`)
         }))
         alert("📁🛜 Failed to upload images")
         return

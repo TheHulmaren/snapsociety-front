@@ -50,7 +50,7 @@ const isSucceded = ref(false);
 
 const onBanSubmit = async () => {
     try {
-        let result = await axios.put(`/api/users/${userBan.value.userId}/ban`, userBan.value)
+        let result = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${userBan.value.userId}/ban`, userBan.value)
         fetchBannedUsers();
         isSucceded.value = true;
     } catch (e) {
@@ -62,7 +62,7 @@ const onBanSubmit = async () => {
 const onUnbanClicked = async (userId) => {
     if (!confirm("Are you sure to unban user: " + userId)) return;
     try {
-        let result = await axios.delete(`/api/users/${userId}/ban`)
+        let result = await axios.delete(`${import.meta.env.VITE_API_URL}/api/users/${userId}/ban`)
         fetchBannedUsers();
     } catch (e) {
         alert("Failed to unban user: " + e.response.data);
@@ -70,7 +70,7 @@ const onUnbanClicked = async (userId) => {
 }
 
 const fetchBannedUsers = async () => {
-    let result = await axios.get(`/api/users/bannedUsers`)
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/bannedUsers`)
     bannedUsers.value = result.data;
 }
 

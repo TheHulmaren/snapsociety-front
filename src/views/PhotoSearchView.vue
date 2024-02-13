@@ -18,13 +18,13 @@ const photoMasonryListRef = ref();
 watch(
     () => route.query.query,
     async () => {
-        let result = await axios.get(`/api/searchPhotos?query=${route.query.query}&breakpoints=medium&includePreUploads=false`)
+        let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/searchPhotos?query=${route.query.query}&breakpoints=medium&includePreUploads=false`)
         photoMasonryListRef.value.updateItems(result.data);
     }
 )
 
 onMounted(async() => {
-    let result = await axios.get(`/api/searchPhotos?query=${route.query.query}&breakpoints=medium&includePreUploads=false`)
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/searchPhotos?query=${route.query.query}&breakpoints=medium&includePreUploads=false`)
     
     photoMasonryListRef.value.appendItems(result.data);
 })

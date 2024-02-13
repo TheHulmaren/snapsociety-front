@@ -21,7 +21,6 @@ const password = ref("");
 const onLoginSubmit = async () =>{
     console.log("Attempt to login")
     console.log(import.meta.env.VITE_API_URL)
-    console.log(process.env.VITE_API_URL)
     var result = await AuthHelper.signIn(id.value, password.value);
     if(result){
         console.log("Login success")

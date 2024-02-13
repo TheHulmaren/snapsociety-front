@@ -14,14 +14,15 @@ export default ({ mode }) => {
       },
     },
     server: {
-      proxy: {
-        "/api": {
-          target: process.env.VITE_API_URL + "/api",
-          changeOrigin: true,
-          secure: false,
-          rewrite: (path) => path.replace(/^\/api/, ""),
-        },
-      },
+      cors: true,
+    //   proxy: {
+    //     import.meta.env.VITE_API_URL + "/api": {
+    //       target: process.env.VITE_API_URL + import.meta.env.VITE_API_URL + "/api",
+    //       changeOrigin: true,
+    //       secure: false,
+    //       rewrite: (path) => path.replace(/^\/api/, ""),
+    //     },
+    //   },
     },
   });
 };

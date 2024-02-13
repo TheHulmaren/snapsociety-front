@@ -76,7 +76,7 @@ const onBannerClicked = () => {
 
 const onBannerSelected = async (selected) => {
     if(selected.length === 0) return
-    let result = await axios.put(`/api/users/${route.params.id}`, {
+    let result = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${route.params.id}`, {
         userName: user.value.userName,
         bio: user.value.bio,
         bannerPhotoId: selected[0].id
@@ -86,7 +86,7 @@ const onBannerSelected = async (selected) => {
 }
 
 const onBioSaved = async () => {
-    let result = await axios.put(`/api/users/${route.params.id}`, {
+    let result = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${route.params.id}`, {
         userName: user.value.userName,
         bio: user.value.bio,
         bannerPhotoId: user.value.bannerPhoto?.id
@@ -105,13 +105,13 @@ const onProfilePhotoSubmit = async () => {
     if (imgInput.files.length === 0) return
     let formData = new FormData()
     formData.append("image", imgInput.files[0])
-    let result = await axios.post(`/api/users/${route.params.id}/profilePhoto`, formData)
+    let result = await axios.post(`${import.meta.env.VITE_API_URL}/api/users/${route.params.id}/profilePhoto`, formData)
     user.value = result.data
 }
 
 onMounted(async () => {
     imgInput = document.getElementById("imageInput")
-    let result = await axios.get(`/api/users/${route.params.id}`)
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${route.params.id}`)
     user.value = result.data
 })
 

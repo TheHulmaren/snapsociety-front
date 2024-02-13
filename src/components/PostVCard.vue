@@ -47,14 +47,14 @@ const articleTypes = {
 const fetchPhotoThumbails = async () => {
     props.post.articlePhotos.sort((a, b) => a.order - b.order)
     var result = await Promise.all(props.post.articlePhotos.map(async (photo) => {
-        let res = await axios.get(`/api/photos/${photo.photoId}?breakpoints=thumbnail`)
+        let res = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos/${photo.photoId}?breakpoints=thumbnail`)
         return res.data.thumbnailUrl
     }))
     photoThumbnails.value = result
 }
 
 const fetchCommentCount = async () => {
-    let result = await axios.get(`/api/comments/count?articleId=${props.post.id}`)
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/comments/count?articleId=${props.post.id}`)
     commentsCount.value = result.data
 }
 

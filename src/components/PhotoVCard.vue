@@ -32,12 +32,12 @@ const isLiked = ref(false)
 
 const onLikeClicked = async () => {
     if (isLiked.value) {
-        let result = await axios.post(`/api/likes/decrementLikes/photos/${props.photo.id}/user/${AuthHelper.getUser().id}`)
+        let result = await axios.post(`${import.meta.env.VITE_API_URL}/api/likes/decrementLikes/photos/${props.photo.id}/user/${AuthHelper.getUser().id}`)
         props.photo.likeCount = result.data.likeCount
         isLiked.value = false
         return
     }
-    let result = await axios.post(`/api/likes/incrementLikes/photos/${props.photo.id}/user/${AuthHelper.getUser().id}`)
+    let result = await axios.post(`${import.meta.env.VITE_API_URL}/api/likes/incrementLikes/photos/${props.photo.id}/user/${AuthHelper.getUser().id}`)
     props.photo.likeCount = result.data.likeCount
     isLiked.value = true
 }

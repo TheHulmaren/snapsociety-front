@@ -253,7 +253,7 @@ const onPostDelete = async () => {
     }
 
     try {
-        await axios.delete(`/api/forumArticles/${route.params.id}`)
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/forumArticles/${route.params.id}`)
     } catch (e) {
         alert("🛜⁉️ Failed to delete post")
         return
@@ -268,12 +268,12 @@ const onPostEdit = async () => {
 
 const onLikeClicked = async () => {
     if (post.value.isLikedByCurrentUser) {
-        let result = await axios.post(`/api/likes/decrementLikes/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
+        let result = await axios.post(`${import.meta.env.VITE_API_URL}/api/likes/decrementLikes/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
         post.value.likeCount = result.data.likeCount
         post.value.isLikedByCurrentUser = false
         return
     }
-    let result = await axios.post(`/api/likes/incrementLikes/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
+    let result = await axios.post(`${import.meta.env.VITE_API_URL}/api/likes/incrementLikes/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
     post.value.likeCount = result.data.likeCount
     post.value.isLikedByCurrentUser = true
 }
@@ -291,7 +291,7 @@ const onCommentEditSubmit = async () => {
     }
 
     try {
-        await axios.put(`/api/comments/${commentEditIndex.value}`, {
+        await axios.put(`${import.meta.env.VITE_API_URL}/api/comments/${commentEditIndex.value}`, {
             content: commentEditContent.value
         })
     } catch (e) {
@@ -311,7 +311,7 @@ const onReplySubmit = async () => {
     }
 
     try {
-        await axios.post(`/api/comments`, {
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/comments`, {
             authorId: AuthHelper.getUser().id,
             articleId: route.params.id,
             content: replyContent.value,
@@ -333,7 +333,7 @@ const onCommentSubmit = async () => {
     }
 
     try {
-        await axios.post(`/api/comments`, {
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/comments`, {
             authorId: AuthHelper.getUser().id,
             articleId: route.params.id,
             content: commentContent.value,
@@ -344,7 +344,7 @@ const onCommentSubmit = async () => {
         return
     }
 
-    let result = await axios.get(`/api/comments/count?articleId=${route.params.id}`)
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/comments/count?articleId=${route.params.id}`)
     commentCount.value = result.data
 
     // last 
@@ -359,13 +359,13 @@ const onCommentDelete = async (comment) => {
     }
 
     try {
-        await axios.delete(`/api/comments/${comment.id}`)
+        await axios.delete(`${import.meta.env.VITE_API_URL}/api/comments/${comment.id}`)
     } catch (e) {
         alert("🛜⁉️ Failed to delete comment")
         return
     }
 
-    let result = await axios.get(`/api/comments/count?articleId=${route.params.id}`)
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/comments/count?articleId=${route.params.id}`)
     commentCount.value = result.data
 
     // last 
@@ -374,13 +374,13 @@ const onCommentDelete = async (comment) => {
 }
 
 const updateComments = async () => {
-    let result = await axios.get(`/api/comments?articleId=${route.params.id}&forumCommentSorts=Added&isDescending=false&pageIndex=${commentPage}&pageLimit=${commentPageSize}`)
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/comments?articleId=${route.params.id}&forumCommentSorts=Added&isDescending=false&pageIndex=${commentPage}&pageLimit=${commentPageSize}`)
 
     await Promise.all(result.data.map(async (comment) => {
-        comment.username = await axios.get(`/api/users/${comment.authorId}`).then((result) => result.data.userName)
-        comment.replies = (await axios.get(`/api/comments/${comment.id}/replies`)).data
+        comment.username = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${comment.authorId}`).then((result) => result.data.userName)
+        comment.replies = (await axios.get(`${import.meta.env.VITE_API_URL}/api/comments/${comment.id}/replies`)).data
         comment.replies = await Promise.all(comment.replies.map(async (reply) => {
-            reply.username = await axios.get(`/api/users/${reply.authorId}`).then((result) => result.data.userName)
+            reply.username = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${reply.authorId}`).then((result) => result.data.userName)
             return reply
         }))
     }))
@@ -390,13 +390,13 @@ const updateComments = async () => {
 
 onMounted(async () => {
     isLoading.value = true
-    let result = await axios.get(`/api/forumArticles/${route.params.id}`)
-    result.data.username = await axios.get(`/api/users/${result.data.authorId}`).then((result) => result.data.userName)
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles/${route.params.id}`)
+    result.data.username = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${result.data.authorId}`).then((result) => result.data.userName)
     post.value = result.data
 
     articleType.value = articleTypes.filter((t) => t.slug === post.value.articleTypeId)[0]
 
-    result = await axios.get(`/api/photos?breakpoints=Large&articleId=${route.params.id}&photoSorts=Added&isDescending=true&includePreUploaded=false`)
+    result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=Large&articleId=${route.params.id}&photoSorts=Added&isDescending=true&includePreUploaded=false`)
 
     photos.value = result.data.map((photo) => {
         return {
@@ -408,31 +408,31 @@ onMounted(async () => {
         }
     }).sort((a, b) => a.order - b.order)
 
-    result = await axios.get(`/api/comments?articleId=${route.params.id}&forumCommentSorts=Added&isDescending=false&pageIndex=0&pageLimit=${commentPageSize}`)
+    result = await axios.get(`${import.meta.env.VITE_API_URL}/api/comments?articleId=${route.params.id}&forumCommentSorts=Added&isDescending=false&pageIndex=0&pageLimit=${commentPageSize}`)
     console.log(result.data)
 
     await Promise.all(result.data.map(async (comment) => {
-        comment.username = await axios.get(`/api/users/${comment.authorId}`).then((result) => result.data.userName)
-        comment.replies = (await axios.get(`/api/comments/${comment.id}/replies`)).data
+        comment.username = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${comment.authorId}`).then((result) => result.data.userName)
+        comment.replies = (await axios.get(`${import.meta.env.VITE_API_URL}/api/comments/${comment.id}/replies`)).data
         comment.replies = await Promise.all(comment.replies.map(async (reply) => {
-            reply.username = await axios.get(`/api/users/${reply.authorId}`).then((result) => result.data.userName)
+            reply.username = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${reply.authorId}`).then((result) => result.data.userName)
             return reply
         }))
     }))
 
     comments.value = result.data
 
-    result = await axios.get(`/api/comments/count?articleId=${route.params.id}`)
+    result = await axios.get(`${import.meta.env.VITE_API_URL}/api/comments/count?articleId=${route.params.id}`)
     commentCount.value = result.data
 
-    result = await axios.get(`/api/likes/countLikes/articles/${route.params.id}`)
+    result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/countLikes/articles/${route.params.id}`)
     post.value.likeCount = result.data
 
-    result = await axios.get(`/api/likes/checkIfLiked/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
+    result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/checkIfLiked/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
     post.value.isLikedByCurrentUser = result.data
 
     // update view count
-    result = await axios.post(`/api/forumArticles/${route.params.id}/view`)
+    result = await axios.post(`${import.meta.env.VITE_API_URL}/api/forumArticles/${route.params.id}/view`)
     viewCount.value = result.data.count
 
     isLoading.value = false

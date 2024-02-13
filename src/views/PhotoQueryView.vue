@@ -139,14 +139,14 @@ const onQueryChanged = async (query) => {
 const queryTable = {
     // in korean
     "🔥 인기": async () => {
-        const result = await axios.get(`/api/photos?breakpoints=Large&photoSorts=Hot&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&hotLikesThreshold=1`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=Large&photoSorts=Hot&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&hotLikesThreshold=1`
             + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
         return result.data
     },
     "🏆 탑_🕗 지난 일주일": async () => {
         let d = new Date();
         d.setDate(d.getDate() - 7);
-        const result = await axios.get(`/api/photos?breakpoints=Large&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&topLikesThreshold=1&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=Large&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&topLikesThreshold=1&fromUtc=${d.toISOString()}`
             + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
         console.log(result.data)
         return result.data
@@ -154,29 +154,29 @@ const queryTable = {
     "🏆 탑_🕗 지난 한달": async () => {
         let d = new Date();
         d.setDate(d.getDate() - 30);
-        const result = await axios.get(`/api/photos?breakpoints=Large&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&topLikesThreshold=1&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=Large&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&topLikesThreshold=1&fromUtc=${d.toISOString()}`
             + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
         return result.data
     },
     "🏆 탑_🕗 지난 1년": async () => {
         let d = new Date();
         d.setDate(d.getDate() - 365);
-        const result = await axios.get(`/api/photos?breakpoints=Large&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&topLikesThreshold=1&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=Large&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&topLikesThreshold=1&fromUtc=${d.toISOString()}`
             + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
         return result.data
     },
     "🏆 탑_🕗 전체": async () => {
-        const result = await axios.get(`/api/photos?breakpoints=Large&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&topLikesThreshold=1`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=Large&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&topLikesThreshold=1`
             + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
         return result.data
     },
     "🕗 업로드_👇 최신 순": async () => {
-        const result = await axios.get(`/api/photos?breakpoints=Large&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=Large&isDescending=true&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
             + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
         return result.data
     },
     "🕗 업로드_👆 오래된 순": async () => {
-        const result = await axios.get(`/api/photos?breakpoints=Large&isDescending=false&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=Large&isDescending=false&includePreUploaded=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
             + (props.uploaderId === undefined ? "" : `&uploaderId=${props.uploaderId}`));
         return result.data
     },
@@ -184,7 +184,7 @@ const queryTable = {
 
 const fetchUserData = async (photos) => {
     await Promise.all(photos.map(async (photo) => {
-        let result = await axios.get(`/api/users/${photo.uploaderId}`);
+        let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${photo.uploaderId}`);
         photo.user = result.data;
     }));
 
@@ -193,9 +193,9 @@ const fetchUserData = async (photos) => {
 
 const fetchLikeInfo = async (photos) => {
     await Promise.all(photos.map(async (photo) => {
-        let result = await axios.get(`/api/likes/countLikes/photos/${photo.id}`);
+        let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/countLikes/photos/${photo.id}`);
         photo.likeCount = result.data;
-        result = await axios.get(`/api/likes/checkIfLiked/photos/${photo.id}/user/${AuthHelper.getUser().id}`);
+        result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/checkIfLiked/photos/${photo.id}/user/${AuthHelper.getUser().id}`);
         photo.isLikedByCurrentUser = result.data;
     }));
 

@@ -183,7 +183,7 @@ const onSelectionConfirmed = (selectedPhotos) => {
 }
 
 const loadEditInitialData = async () => {
-    let result = await axios.get(`/api/forumArticles/${props.id}`)
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles/${props.id}`)
     post.value = result.data
     sceditor.instance(textarea).val(result.data.contentText)
     if (result.data.articleTypeId !== "photo") {
@@ -191,7 +191,7 @@ const loadEditInitialData = async () => {
     }
 
     photos.value = (await Promise.all(post.value.articlePhotos.map(async (photo) => {
-        let result = await axios.get(`/api/photos/${photo.photoId}?breakpoints=thumbnail`)
+        let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos/${photo.photoId}?breakpoints=thumbnail`)
 
         return {
             data: result.data,
@@ -233,7 +233,7 @@ const onPostEdit = async () => {
     let articleId = null
     var contentTextHtml = sceditor.instance(textarea).val()
     try {
-        let result = await axios.put(`/api/forumArticles/${props.id}`,
+        let result = await axios.put(`${import.meta.env.VITE_API_URL}/api/forumArticles/${props.id}`,
             {
                 ...post.value,
                 contentText: contentTextHtml
@@ -250,7 +250,7 @@ const onPostEdit = async () => {
         })
 
         if (post.value.articleTypeId === "photo") {
-            await axios.put(`/api/forumArticles/${articleId}/photos`, articlePhotos)
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/forumArticles/${articleId}/photos`, articlePhotos)
         }
 
         // go to the post
@@ -273,7 +273,7 @@ const onPostSubmit = async () => {
     var contentTextHtml = sceditor.instance(textarea).val()
 
     try {
-        let result = await axios.post("/api/forumArticles",
+        let result = await axios.post(import.meta.env.VITE_API_URL + "/api/forumArticles",
             {
                 ...post.value,
                 contentText: contentTextHtml
@@ -291,7 +291,7 @@ const onPostSubmit = async () => {
         })
 
         if (post.value.articleTypeId === "photo") {
-            await axios.put(`/api/forumArticles/${articleId}/photos`, articlePhotos)
+            await axios.put(`${import.meta.env.VITE_API_URL}/api/forumArticles/${articleId}/photos`, articlePhotos)
         }
 
         router.push("/main/posts")
@@ -299,7 +299,7 @@ const onPostSubmit = async () => {
     }
     catch(e) {
         if (articleUploaded) {
-            await axios.delete(`/api/forumArticles/${articleId}`)
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/forumArticles/${articleId}`)
         }
         alert("🛜⁉️ Failed to post")
     }

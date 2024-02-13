@@ -34,7 +34,7 @@ const onMoreClicked = async () => {
 
 const addPhotos = async () => {
     try {
-        let result = await axios.get(`/api/photos?breakpoints=thumbnail&PageLimit=${props.pageLimit}&PageIndex=${pageIndex}&photoSorts=Added&isDescending=true&includePreUploaded=false&uploaderId=${AuthHelper.getUser().id}`)
+        let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=thumbnail&PageLimit=${props.pageLimit}&PageIndex=${pageIndex}&photoSorts=Added&isDescending=true&includePreUploaded=false&uploaderId=${AuthHelper.getUser().id}`)
         if (result.data.length === 0) {
             alert("📁🛜 No more photos")
             return

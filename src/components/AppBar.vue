@@ -55,7 +55,7 @@ const fetchUserData = async () => {
     if (!isAuthed.value) {
         return
     }
-    let result = await axios.get(`/api/users/${AuthHelper.getUser().id}`)
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${AuthHelper.getUser().id}`)
     user.value = result.data
 }
 

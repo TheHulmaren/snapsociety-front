@@ -12,11 +12,11 @@ const posts = ref([]);
 const props = defineProps(['userId']);
 
 onMounted(async () => {
-    var result = await axios.get(`/api/likes/getLikedList/articles/user/${props.userId}`);
+    var result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/getLikedList/articles/user/${props.userId}`);
     await Promise.all(result.data.map(async (post) => {
-        let user = await axios.get(`/api/users/${post.authorId}`);
-        let likeCount = await axios.get(`/api/likes/countLikes/articles/${post.id}`);
-        let isLikedByCurrentUser = await axios.get(`/api/likes/checkIfLiked/articles/${post.id}/user/${props.userId}`);
+        let user = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${post.authorId}`);
+        let likeCount = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/countLikes/articles/${post.id}`);
+        let isLikedByCurrentUser = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/checkIfLiked/articles/${post.id}/user/${props.userId}`);
         post.user = user.data;
         post.likeCount = likeCount.data;
         post.isLikedByCurrentUser = isLikedByCurrentUser.data;

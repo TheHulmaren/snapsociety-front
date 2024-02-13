@@ -146,25 +146,25 @@ const onQueryChanged = async (query) => {
 
 const queryTable = {
     "🕗 게시일_👇 최신 순": async () => {
-        const result = await axios.get(`/api/forumArticles?articleSorts=Added&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Added&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
     "🕗 게시일_👆 오래된 순": async () => {
-        const result = await axios.get(`/api/forumArticles?articleSorts=Added&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Added&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
     "🔥 인기": async () => {
-        const result = await axios.get(`/api/forumArticles?articleSorts=Hot&pageIndex=${pageIndex}&pageLimit=${pageLimit}&hotLikesThreshold=1`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Hot&pageIndex=${pageIndex}&pageLimit=${pageLimit}&hotLikesThreshold=1`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
     "💬 댓글_👇 댓글 많은 순_🕗 전체": async () => {
-        const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
@@ -172,7 +172,7 @@ const queryTable = {
     "💬 댓글_👇 댓글 많은 순_🕗 지난 일주일": async () => {
         let d = new Date()
         d.setDate(d.getDate() - 7)
-        const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
@@ -180,7 +180,7 @@ const queryTable = {
     "💬 댓글_👇 댓글 많은 순_🕗 지난 한달": async () => {
         let d = new Date()
         d.setDate(d.getDate() - 30)
-        const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
@@ -188,13 +188,13 @@ const queryTable = {
     "💬 댓글_👇 댓글 많은 순_🕗 지난 1년": async () => {
         let d = new Date()
         d.setDate(d.getDate() - 365)
-        const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Comments&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
     "💬 댓글_👆 댓글 적은 순_🕗 전체": async () => {
-        const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
@@ -202,7 +202,7 @@ const queryTable = {
     "💬 댓글_👆 댓글 적은 순_🕗 지난 일주일": async () => {
         let d = new Date()
         d.setDate(d.getDate() - 7)
-        const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
@@ -210,7 +210,7 @@ const queryTable = {
     "💬 댓글_👆 댓글 적은 순_🕗 지난 한달": async () => {
         let d = new Date()
         d.setDate(d.getDate() - 30)
-        const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
@@ -218,13 +218,13 @@ const queryTable = {
     "💬 댓글_👆 댓글 적은 순_🕗 지난 1년": async () => {
         let d = new Date()
         d.setDate(d.getDate() - 365)
-        const result = await axios.get(`/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Comments&isDescending=false&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
     },
     "🏆 탑_🕗 전체": async () => {
-        const result = await axios.get(`/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
@@ -232,7 +232,7 @@ const queryTable = {
     "🏆 탑_🕗 지난 일주일": async () => {
         let d = new Date()
         d.setDate(d.getDate() - 7)
-        const result = await axios.get(`/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
@@ -240,7 +240,7 @@ const queryTable = {
     "🏆 탑_🕗 지난 한달": async () => {
         let d = new Date()
         d.setDate(d.getDate() - 30)
-        const result = await axios.get(`/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
@@ -248,7 +248,7 @@ const queryTable = {
     "🏆 탑_🕗 지난 1년": async () => {
         let d = new Date()
         d.setDate(d.getDate() - 365)
-        const result = await axios.get(`/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
+        const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles?articleSorts=Top&isDescending=true&pageIndex=${pageIndex}&pageLimit=${pageLimit}&fromUtc=${d.toISOString()}`
             + (props.articleType === undefined ? "" : `&articleType=${props.articleType}`)
             + (props.authorId === undefined ? "" : `&authorId=${props.authorId}`));
         return result.data
@@ -257,7 +257,7 @@ const queryTable = {
 
 const fetchUserData = async (posts) => {
     await Promise.all(posts.map(async (post) => {
-        let result = await axios.get(`/api/users/${post.authorId}`);
+        let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${post.authorId}`);
         post.user = result.data;
     }));
 
@@ -266,9 +266,9 @@ const fetchUserData = async (posts) => {
 
 const fetchLikeInfo = async (posts) => {
     await Promise.all(posts.map(async (post) => {
-        let result = await axios.get(`/api/likes/countLikes/articles/${post.id}`);
+        let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/countLikes/articles/${post.id}`);
         post.likeCount = result.data;
-        result = await axios.get(`/api/likes/checkIfLiked/articles/${post.id}/user/${AuthHelper.getUser().id}`);
+        result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/checkIfLiked/articles/${post.id}/user/${AuthHelper.getUser().id}`);
         post.isLikedByCurrentUser = result.data;
     }));
 
