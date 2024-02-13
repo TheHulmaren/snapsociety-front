@@ -1,7 +1,7 @@
 <template>
     <div class="gap-4 flex flex-col">
         <div @click="onBannerClicked" class="w-full aspect-[21/9] cursor-pointer overflow-hidden">
-            <img :src="user.bannerPhoto?.largeUrl ?? '/default-banner-img.webp'" alt="배너 사진" class="w-full h-full object-cover object-center">
+            <img :src="user.bannerPhoto?.largeUrl ?? '/default-banner-img.jpg'" alt="배너 사진" class="w-full h-full object-cover object-center">
         </div>
         <input @change="onProfilePhotoSubmit" id="imageInput" type="file" name="file" style="display:none;"
             accept="image/jpg, image/jpeg, image/png, image/webp, image/tiff" />
