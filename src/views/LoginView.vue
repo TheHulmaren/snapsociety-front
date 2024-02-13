@@ -23,6 +23,7 @@ const onLoginSubmit = async () =>{
     console.log(import.meta.env.VITE_API_URL)
     var result = await AuthHelper.signIn(id.value, password.value);
     if(result){
+        console.log(result)
         console.log("Login success")
         AuthHelper.clearTokens()
         AuthHelper.setAccessToken(result.accessToken)
