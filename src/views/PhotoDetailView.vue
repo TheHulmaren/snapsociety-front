@@ -1,7 +1,7 @@
 <template>
     <Skeleton v-if="isLoading" />
     <div v-else class="flex flex-col p-4 gap-6">
-        <img :src="photo.largeUrl" class=" max-h-[450px] object-contain bg-gray-100 overflow-y-auto"
+        <img :src="photo.largeUrl" class=" max-h-[450px] object-contain bg-gray-800 rounded overflow-y-auto"
             @click="enlarged = !enlarged">
         <div class="flex justify-between items-center">
             <SectionHeader content="✍️ 제목과 설명" />

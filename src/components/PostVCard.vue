@@ -1,16 +1,21 @@
 <template>
-    <li class="flex flex-col items-start py-2 px-4 gap-2 cursor-pointer hover:bg-gray-100 group">
-        <div class="flex w-full gap-2 text-xs items-center">
-            <span class=" font-normal text-[11px] rounded-full bg-gray-100 text-gray-800 group-hover:outline outline-main px-2 py-0.5">{{ articleTypes[props.post.articleTypeId] }}</span>
-            <h3 class="font-medium">{{ props.post.title }}</h3>
+    <li class="flex flex-col items-start py-4 px-4 gap-2 cursor-pointer hover:bg-gray-800 group transition duration-100 ease-in-out">
+        <div class="flex flex-col w-full gap-2 text-xs items-start">
+            <div>
+                <span class="mr-2 text-[11px] rounded bg-gray-800  px-2 py-0.5 text-nowrap">{{ props.post.isLikedByCurrentUser ? '❤️' : '🩶' }} {{ props.post.likeCount }}</span>
+                <span
+                    class="font-normal text-[11px] rounded bg-gray-800 group-hover:outline outline-main px-2 py-0.5 text-nowrap">{{
+                        articleTypes[props.post.articleTypeId] }}</span>
+            </div>
+            <h3 class="text-sm mt-2 text-gray-300">{{ props.post.title }}</h3>
         </div>
-        <ul v-if="photoThumbnails.length > 0" class="flex gap-2 overflow-clip">
+        <ul v-if="photoThumbnails.length > 0" class="flex gap-2">
             <li v-for="thumbnail in photoThumbnails" :key="thumbnail" class="flex shrink-0 items-center">
-                <img :src="thumbnail" class="h-10 w-10 object-cover rounded-sm" />
+                <img :src="thumbnail" class="h-24 w-24 object-cover rounded " />
             </li>
         </ul>
         <div class=" text-xs flex gap-4 items-center">
-            <span>{{ props.post.isLikedByCurrentUser ? '❤️' : '🩶' }} {{ props.post.likeCount }}</span>
+
             <div class="gap-2 flex">
                 <img class="w-4 h-4 rounded-full object-cover"
                     :src="props.post.user.profilePhotoUrl ?? '/default-prof-img.webp'">

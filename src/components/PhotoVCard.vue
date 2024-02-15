@@ -1,18 +1,18 @@
 <template>
-    <li @click="router.push(`/photos/${photo.id}`)" class="flex flex-col gap-2 p-4 cursor-pointer hover:bg-gray-100">
+    <li @click="router.push(`/photos/${photo.id}`)" class="flex flex-col gap-2 p-4 cursor-pointer hover:bg-gray-800 transition duration-100 ease-in-out">
         <div v-if="props.showProfile" class="flex items-center gap-2">
             <img @click="router.push(`/user/${photo.user.id}`)"
                 class="w-6 h-6 rounded-full object-cover hover:cursor-pointer"
                 :src="props.photo.user.profilePhotoUrl ?? '/default-prof-img.webp'">
-            <h1 @click="router.push(`/user/${photo.user.id}`)" class=" text-sm font-normal text-text-dark hover:cursor-pointer">{{ props.photo.user.userName }}</h1>
-            <span class=" text-xs font-normal text-text-dark hover:cursor-pointer">{{ TimeHelper.timeSince(new
+            <h1 @click="router.push(`/user/${photo.user.id}`)" class=" text-xs hover:cursor-pointer">{{ props.photo.user.userName }}</h1>
+            <span class=" text-xs font-normal text-text-dark dark:text-gray-500 hover:cursor-pointer">{{ TimeHelper.timeSince(new
                 Date(props.photo.createdAtUtc)) }} 전</span>
             <div class="grow"></div>
-            <button @click="onLikeClicked" class=" text-base text-main font-semibold">{{ isLiked ? "❤️" : "🩶" }} {{
+            <button @click="onLikeClicked" class=" text-base font-semibold">{{ isLiked ? "❤️" : "🩶" }} {{
                 props.photo.likeCount
             }}</button>
         </div>
-        <img class="rounded-lg"
+        <img class="rounded"
             :src="props.photo.largeUrl ?? props.photo.mediumUrl ?? props.photo.smallUrl ?? props.photo.thumbnailUrl ?? props.photo.url"
             :alt="props.photo.desc" />
     </li>

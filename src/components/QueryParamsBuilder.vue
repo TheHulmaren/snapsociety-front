@@ -1,7 +1,7 @@
 <template>
     <ul class="flex gap-2 px-4 items-center">
         <li v-for="(option, index) in options" :key="index"
-            class=" hover:bg-text-searchbar hover:text-white text-sm text-text-searchbar hover:cursor-pointer px-2 py-1 rounded-full border-0.5 border-stroke-mid">
+            class=" bg-gray-800 hover:text-gray-300 text-xs text-text-searchbar hover:cursor-pointer px-2 py-1 rounded border-0.5 border-gray-700 transition-all duration-100 ease-in-out">
             <select @change="onDropdownChange(index, $event)"
                 class="bg-transparent hover:cursor-pointer focus:outline-none">
                 <option :selected="currentQuery[index] === item" v-for="item in option" :key="item">{{ item }}</option>

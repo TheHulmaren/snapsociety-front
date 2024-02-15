@@ -1,11 +1,11 @@
 <template>
-    <div class="px-4 py-2 gap-4 flex items-center border-b-0.5 border-b-stroke-light">
+    <div class="px-4 py-2 gap-4 flex items-center border-b-0.5 border-b-stroke-light dark:border-b-gray-800">
         <h1 @click="router.push('/')" class="text-sm font-semibold text-main hover:cursor-pointer">
             Snap 📸<br>Society
         </h1>
         <form @submit.prevent="router.push('/search-photo?query=' + searchQuery)" class="grow">
             <input v-model="searchQuery" placeholder="🔍   사진을 (영어로) 묘사해 주세요"
-                class="py-2 px-4 rounded-full w-full bg-button-back-light border-0.5 border-stroke-light text-xs font-normal text-text-searchbar" />
+                class="py-2 px-4 rounded w-full bg-button-back-light dark:bg-gray-950 border border-stroke-light dark:border-gray-800 text-xs font-normal text-text-searchbar" />
         </form>
         <div class="relative">
             <img v-if="isAuthed" @click="onProfileClicked"

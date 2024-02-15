@@ -1,7 +1,7 @@
 <template>
     <Skeleton v-if="isLoading" />
-    <div v-else class="flex flex-col gap-6 p-4">
-        <div class="flex items-center justify-between">
+    <div v-else class="flex flex-col gap-4 py-4">
+        <div class="flex items-center justify-between px-4">
             <SectionHeader :content="`👩‍💻 Post ID: ${post.id}`" />
             <div class="gap-4 flex"
                 v-if="post.authorId === AuthHelper.getUser().id || AuthHelper.getUser().roles.some((r) => r === 'Admin' || r === 'Mod')">
@@ -9,12 +9,13 @@
                 <button @click="onPostDelete" class="text-xs text-red-500">삭제하기</button>
             </div>
         </div>
-        <div class="flex flex-col gap-4">
-            <h2 class="flex text-xl items-center gap-2"><span
-                    class="text-sm py-1 px-2 rounded-full bg-green-600 text-white font-semibold text-nowrap">{{
-                        articleType.titleBefore
-                    }}</span> {{ post.title }}</h2>
-            <div @click="router.push('/user/' + post.authorId)" class="flex text-xs gap-2 items-stretch cursor-pointer">
+        <div class="flex flex-col gap-2 px-4">
+            <span class="text-xs py-1 px-2 w-fit rounded-full bg-gray-100 border-0.5 border-gray-200 text-nowrap">{{
+                articleType.titleBefore
+            }}</span>
+            <h2 class="flex items-center gap-2"> {{ post.title }}</h2>
+            <div @click="router.push('/user/' + post.authorId)"
+                class="flex text-xs gap-2 items-stretch cursor-pointer mt-2">
                 <img :src="post.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
                     class="w-10 h-10 rounded-full object-cover">
                 <div class="flex flex-col justify-around font-semibold">
@@ -23,21 +24,20 @@
                 </div>
             </div>
         </div>
-        <SectionHeader v-if="post.articleTypeId === 'photo'" :content="`📸 ${photos.length} Photos`" />
-        <ul v-if="post.articleTypeId === 'photo'" class="flex flex-col gap-4">
+        <ul v-if="post.articleTypeId === 'photo'" class="flex flex-col gap-2">
             <div v-if="photos.length === 0" class="flex flex-col items-center justify-center gap-2">
                 <h3 class="text-xl font-semibold">❌ No photos</h3>
                 <p class="text-sm">This post has no photos.</p>
             </div>
-            <div v-else class="flex flex-col gap-2 items-center" v-for="photo in photos" :key="photo.id">
+            <div v-else class="flex flex-col items-center" v-for="photo in photos" :key="photo.id">
                 <PhotoVCard :photo="photo" />
                 <PhotoExifPanel :exif="photo.exifTags" class="w-full sm:w-[450px]" />
                 <p>{{ photo.caption }}</p>
             </div>
         </ul>
-        <div v-html="post.contentText"></div>
-        <div class="flex flex-col justify-center gap-4">
-            <div class="flex w-full font-normal text-xs gap-4 items-center text-gray-600">
+        <div v-html="post.contentText" class="px-4"></div>
+        <div class="flex flex-col justify-center gap-4 px-4">
+            <div class="flex w-full font-normal text-xs gap-4 items-center">
                 <SectionHeader :content="`📊 Stats`" />
                 <span>{{ TimeHelper.timeSince(new Date(post.createdAtUtc)) }} 전</span>
                 <span>댓글 {{ commentCount }}</span>
@@ -46,38 +46,38 @@
             <button @click="onLikeClicked" class="text-2xl">{{ post.isLikedByCurrentUser ? '❤️' : '🩶' }} {{ post.likeCount
             }}</button>
         </div>
-        <SectionHeader :content="`${articleType.commentBefore} ${comments.length} ${articleType.commentAfter}`" />
-        <ul class="flex flex-col gap-2">
+        <SectionHeader class="mx-4"
+            :content="`${articleType.commentBefore} ${comments.length} ${articleType.commentAfter}`" />
+        <ul class="flex flex-col divide-y-0.5 divide-gray-800">
             <li class="relative flex flex-col gap-2" v-for="comment in comments" :key="comment.id">
-                <div class="flex gap-2 items-start">
+                <div class="flex gap-2 items-start  p-2">
                     <img :src="comment.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
                         @click="router.push('/user/' + comment.authorId)"
-                        class="w-5 h-5 object-cover rounded-full cursor-pointer">
-                    <div class="flex flex-col gap-2 grow">
-                        <div class="flex gap-2 items-center">
-                            <span v-if="AuthHelper.getUser().id === comment.authorId"
-                                class="font-semibold bg-main text-white rounded-full text-[11px] px-2">나</span>
-                            <span v-else-if="comment.authorId === post.authorId"
-                                class="font-semibold bg-blue-500 text-white rounded-full text-[11px] px-2">글</span>
-                            <h3 class=" text-xs font-semibold">{{
+                        class="w-4 h-4 object-cover rounded-full cursor-pointer">
+                    <div class="flex flex-col grow">
+                        <div class="flex gap-2 items-center text-[11px]">
+                            <h3 class=" ">{{
                                 comment.user?.userName }}</h3>
-                            <span class="text-xs">{{ TimeHelper.timeSince(new Date(comment.createdAtUtc)) }}</span>
+                            <span class="text-gray-500">{{ TimeHelper.timeSince(new Date(comment.createdAtUtc)) }}</span>
+                            <span v-if="AuthHelper.getUser().id === comment.authorId"
+                                class="font-semibold text-main  rounded text-[11px]">me</span>
+                            <span v-else-if="comment.authorId === post.authorId"
+                                class="font-semibold text-blue-500  rounded text-[11px]">op</span>
                             <div class="grow"></div>
                             <div class="flex gap-4">
                                 <button
                                     @click="replyIndex = replyIndex === undefined ? comment.id : undefined; replyContent = ''"
-                                    class="text-xs">
+                                    class="">
                                     답글</button>
                                 <button
                                     @click="commentEditIndex = commentEditIndex === comment.id ? undefined : comment.id; commentEditContent = comment.content; console.log(commentEditIndex)"
-                                    v-if="AuthHelper.getUser().id === comment.authorId" class=" text-xs">수정</button>
+                                    v-if="AuthHelper.getUser().id === comment.authorId" class=" ">수정</button>
                                 <button @click="onCommentDelete(comment)"
                                     v-if="AuthHelper.getUser().id === comment.authorId || (AuthHelper.getUser().roles ?? []).some(r => r === 'Admin')"
-                                    class=" text-red-500 text-xs">삭제</button>
+                                    class=" text-red-500 ">삭제</button>
                             </div>
                         </div>
-                        <p v-if="commentEditIndex !== comment.id" class="py-0.5 px-2 bg-back rounded-lg">{{
-                            comment.content }}</p>
+                        <p v-if="commentEditIndex !== comment.id" class="py-2 text-sm">{{ comment.content }}</p>
                         <textarea v-else v-model="commentEditContent" placeholder="Edit comment"
                             class="py-1 px-2 bg-back rounded-lg border-main border-0.5"
                             oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
@@ -89,33 +89,34 @@
                     <button @click="onCommentEditSubmit"
                         class="px-4 py-1 rounded-full border-0.5 border-main text-main hover:bg-main hover:text-white font-semibold text-xs w-fit">Confirm</button>
                 </div>
-                <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[6px] bg-main"></div>
-                <ul class="flex flex-col gap-2 pl-6">
-                    <li class="relative flex flex-col gap-2" v-for="reply in comment.replies" :key="reply.id">
+                <!-- <div class="absolute w-[1px] h-[calc(100%-28px)] bottom-0 left-[10px] bg-gray-700"></div> -->
+                <ul class="flex flex-col divide-y-0.5 divide-gray-800 border-t-0.5 border-gray-800 bg-gray-900">
+                    <li class="relative flex flex-col gap-2 p-2 pl-4 border-l-4 border-gray-800" v-for="reply in comment.replies" :key="reply.id">
                         <div class="flex gap-2 items-start">
                             <img :src="reply.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
                                 @click="router.push('/user/' + comment.authorId)"
                                 class="w-4 h-4 object-cover rounded-full cursor-pointer">
-                            <div class="flex flex-col gap-2 grow">
-                                <div class="flex gap-2 items-center">
-                                    <span v-if="AuthHelper.getUser().id === reply.authorId"
-                                        class="font-semibold bg-main text-white rounded-full text-[11px] px-2">나</span>
-                                    <span v-else-if="reply.authorId === post.authorId"
-                                        class="font-semibold bg-blue-500 text-white rounded-full text-[11px] px-2">글</span>
-                                    <h3 class=" text-xs font-semibold">{{
+                            <div class="flex flex-col grow">
+                                <div class="flex gap-2 items-center text-[11px]">
+                                    <h3 class="  ">{{
                                         reply.user?.userName }}</h3>
-                                    <span class="text-xs">{{ TimeHelper.timeSince(new Date(reply.createdAtUtc)) }}</span>
+                                    <span class=" text-gray-500">{{ TimeHelper.timeSince(new Date(reply.createdAtUtc))
+                                    }}</span>
+                                    <span v-if="AuthHelper.getUser().id === reply.authorId"
+                                        class="font-semibold text-main  rounded text-[11px]">me</span>
+                                    <span v-else-if="reply.authorId === post.authorId"
+                                        class="font-semibold text-blue-500  rounded text-[11px]">op</span>
                                     <div class="grow"></div>
                                     <div class="flex gap-4">
                                         <button
                                             @click="commentEditIndex = commentEditIndex === reply.id ? undefined : reply.id; commentEditContent = reply.content; console.log(commentEditIndex)"
-                                            v-if="AuthHelper.getUser().id === reply.authorId" class=" text-xs">수정</button>
+                                            v-if="AuthHelper.getUser().id === reply.authorId" class="">수정</button>
                                         <button @click="onCommentDelete(reply)"
                                             v-if="AuthHelper.getUser().id === reply.authorId || (AuthHelper.getUser().roles ?? []).some(r => r === 'Admin')"
-                                            class=" text-red-500 text-xs">삭제</button>
+                                            class=" text-red-500">삭제</button>
                                     </div>
                                 </div>
-                                <p v-if="commentEditIndex !== reply.id" class="py-0.5 px-2 bg-back rounded-lg">{{
+                                <p v-if="commentEditIndex !== reply.id" class="py-2 text-sm">{{
                                     reply.content }}</p>
                                 <textarea v-else v-model="commentEditContent" placeholder="Edit comment"
                                     class="py-1 px-2 bg-back rounded-lg border-main border-0.5"
@@ -128,7 +129,7 @@
                             <button @click="onCommentEditSubmit"
                                 class="px-4 py-1 rounded-full border-0.5 border-main text-main hover:bg-main hover:text-white font-semibold text-xs w-fit">Confirm</button>
                         </div>
-                        <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[6px] bg-main"></div>
+                        <!-- <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[8px] bg-gray-700"></div> -->
                     </li>
                     <li v-if="replyIndex === comment.id" class="relative flex flex-col gap-2 ">
                         <div class="flex gap-2 items-start">
