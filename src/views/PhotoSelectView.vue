@@ -1,11 +1,11 @@
 <template>
     <div class="flex flex-col w-full h-full gap-4">
         <div class="grow flex flex-col gap-4 overflow-y-scroll">
-            <ul class="grid grid-cols-2 gap-4 p-4">
+            <ul class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
                 <li v-for="photo in photos" :key="photo.id">
                     <img @click="onPhotoClicked(photo)" :src="photo.url ?? photo.thumbnailUrl"
-                        class="w-full aspect-square object-contain rounded-md cursor-pointer"
-                        :class="{ 'outline-main outline outline-offset-4 bg-slate-200': selection.some((s) => s.id === photo.id) }" />
+                        class="w-full aspect-square object-contain rounded-md cursor-pointer border border-gray-700 transition-all duration-100 ease-in-out"
+                        :class="{ 'border-main outline-offset-2 bg-gray-700': selection.some((s) => s.id === photo.id) }" />
                 </li>
             </ul>
             <DefaultButton class="self-center" content="🛜 더보기" @click="onMoreClicked" />
@@ -19,6 +19,7 @@ import axios from 'axios';
 import DefaultButton from '@/components/DefaultButton.vue';
 import { defineProps, onMounted, ref, defineEmits } from 'vue'
 import { AuthHelper } from '@/helpers/AuthHelper';
+import SectionHeader from '@/components/SectionHeader.vue';
 
 const props = defineProps(['pageLimit', 'columns', 'initialSelection', 'selectionLimit'])
 const photos = ref([])

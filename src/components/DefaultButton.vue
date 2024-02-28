@@ -1,7 +1,7 @@
 <template>
     <button v-if="props.type === 'primary' || props.type === undefined"
         class="px-4 py-2 border-0.5 border-gray-700 shadow-main text-gray-400 hover:text-gray-200 bg-gray-800 hover:bg-gray-800 rounded w-fit text-xs transition-all duration-100 ease-in-out"
-        :class="{ 'bg-gray-800 shadow-md -translate-y-[2px] text-main': isSelected }">{{ props.content }}</button>
+        :class="{ 'bg-gray-800 shadow-md -translate-y-[2px] text-main hover:text-main': isSelected }">{{ props.content }}</button>
     <button v-else-if="props.type === 'disabled'"
     class="px-4 py-2 border-0.5 border-gray-700 shadow-main text-gray-400 hover:text-gray-200 bg-gray-900 hover:bg-gray-800 rounded w-fit text-xs transition-all duration-100 ease-in-out"
         :class="{ 'bg-gray-800 shadow-md -translate-y-[2px] text-main': isSelected }">{{ props.content }}</button>

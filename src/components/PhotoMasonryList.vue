@@ -43,7 +43,7 @@ const appendItems = async (photos) => {
         let id = 'Id_' + photo.id + '_gridItem_' + incrementalIndex;
         gridItem.setAttribute('src', photo.largeUrl ?? photo.mediumUrl ?? photo.smallUrl ?? photo.thumbnailUrl ?? photo.url);
         gridItem.setAttribute('id', id);
-        gridItem.setAttribute('class', 'grid-item p-1 object-cover rounded-lg cursor-pointer');
+        gridItem.setAttribute('class', 'grid-item p-1 object-cover rounded cursor-pointer');
         gridItem.setAttribute('style', `width: ${100 / props.columns}%;`)
         gridItem.addEventListener('click', () => {
             emits('photoClicked', photo, id);
@@ -63,7 +63,7 @@ const prependItems = async (photos) => {
         let id = 'Id_' + photo.id + '_gridItem_' + incrementalIndex;
         gridItem.setAttribute('src', photo.mediumUrl);
         gridItem.setAttribute('id', id);
-        gridItem.setAttribute('class', 'grid-item p-1 object-cover rounded-lg cursor-pointer');
+        gridItem.setAttribute('class', 'grid-item p-1 object-cover rounded cursor-pointer');
         gridItem.setAttribute('style', `width: ${100 / props.columns}%;`)
         gridItem.addEventListener('click', () => {
             emits('photoClicked', photo, id);

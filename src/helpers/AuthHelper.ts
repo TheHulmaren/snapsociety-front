@@ -63,11 +63,11 @@ export class AuthHelper {
     };
   }
 
-  static async signIn(id: string, password: string) {
+  static async signIn(email: string, password: string) {
     var response;
     try {
       response = await this.authAxios.post(import.meta.env.VITE_API_URL + "/api/auth/signIn", {
-        id,
+        email,
         password,
       });
     } catch (e) {
@@ -133,11 +133,15 @@ export class AuthHelper {
 
     var result: {
       id: string;
+      email: string;
       username: string;
       roles: string[] | null;
     } = {
       id: decodedPayload[
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+      ],
+      email: decodedPayload[
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
       ],
       username:
         decodedPayload[

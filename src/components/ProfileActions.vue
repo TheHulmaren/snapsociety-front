@@ -1,13 +1,13 @@
 <template>
-    <div class="flex flex-col text-nowrap divide-y divide-stroke-light text-text-dark rounded-xl overflow-clip">
+    <div class="flex flex-col text-nowrap divide-y divide-gray-700 rounded overflow-clip bg-gray-800 text-sm">
         <button @click="router.push('/user/' + AuthHelper.getUser().id); emits('on-select')"
-            class="text-left w-full py-2 px-6 hover:bg-main hover:text-white">💁‍♂️ My Profile</button>
+            class="text-left w-full py-2 px-10 hover:bg-gray-700 hover:text-white transition duration-100 ease-in-out">👤 프로필</button>
         <button @click="router.push('/submit/photo'); emits('on-select')"
-            class="text-left w-full py-2 px-6 hover:bg-main hover:text-white">🛜 Upload Photos</button>
+            class="text-left w-full py-2 px-10 hover:bg-gray-700 hover:text-white transition duration-100 ease-in-out">📂 사진 업로드</button>
         <button @click="router.push('/submit/post'); emits('on-select')"
-            class="text-left w-full py-2 px-6 hover:bg-main hover:text-white">🖌️ Write Post</button>
+            class="text-left w-full py-2 px-10 hover:bg-gray-700 hover:text-white transition duration-100 ease-in-out">🖌️ 글쓰기</button>
         <button @click="router.push('/userSettings'); emits('on-select')"
-            class="text-left w-full py-2 px-6 hover:bg-main hover:text-white">⚙️ Settings</button>
+            class="text-left w-full py-2 px-10 hover:bg-gray-700 hover:text-white transition duration-100 ease-in-out">⚙️ 설정</button>
     </div>
 </template>
 <script setup>

@@ -297,16 +297,13 @@ onMounted(async () => {
 
         if (listBottom <= screenBottom + 50 && !reachedEnd.value && !isLoading.value) {
             pageIndex++
-            isLoading.value = true
             let result = await queryTable[currentQuery]();
             if (result.length === 0) {
                 reachedEnd.value = true
-                isLoading.value = false
                 return
             }
             result = await fetchUserData(result);
             posts.value.push(...result)
-            isLoading.value = false
         }
     })
 })

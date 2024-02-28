@@ -9,13 +9,12 @@
             </div>
             <h3 class="text-sm mt-2 text-gray-300">{{ props.post.title }}</h3>
         </div>
-        <ul v-if="photoThumbnails.length > 0" class="flex gap-2">
+        <ul v-if="photoThumbnails.length > 0" class="flex gap-2 overflow-clip">
             <li v-for="thumbnail in photoThumbnails" :key="thumbnail" class="flex shrink-0 items-center">
-                <img :src="thumbnail" class="h-24 w-24 object-cover rounded " />
+                <img :src="thumbnail" class="h-24 w-24 object-cover rounded border-gray-700 border-0.5" />
             </li>
         </ul>
         <div class=" text-xs flex gap-4 items-center">
-
             <div class="gap-2 flex">
                 <img class="w-4 h-4 rounded-full object-cover"
                     :src="props.post.user.profilePhotoUrl ?? '/default-prof-img.webp'">

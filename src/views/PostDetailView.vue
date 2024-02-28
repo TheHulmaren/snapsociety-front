@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="flex flex-col gap-2 px-4">
-            <span class="text-xs py-1 px-2 w-fit rounded-full bg-gray-100 border-0.5 border-gray-200 text-nowrap">{{
+            <span class="text-xs py-1 px-2 w-fit rounded bg-gray-800 border-0.5 border-gray-700 text-nowrap">{{
                 articleType.titleBefore
             }}</span>
             <h2 class="flex items-center gap-2"> {{ post.title }}</h2>
@@ -35,7 +35,7 @@
                 <p>{{ photo.caption }}</p>
             </div>
         </ul>
-        <div v-html="post.contentText" class="px-4"></div>
+        <div v-html="post.contentText" class="px-4 prose prose-slate prose-invert "></div>
         <div class="flex flex-col justify-center gap-4 px-4">
             <div class="flex w-full font-normal text-xs gap-4 items-center">
                 <SectionHeader :content="`📊 Stats`" />
@@ -49,8 +49,8 @@
         <SectionHeader class="mx-4"
             :content="`${articleType.commentBefore} ${comments.length} ${articleType.commentAfter}`" />
         <ul class="flex flex-col divide-y-0.5 divide-gray-800">
-            <li class="relative flex flex-col gap-2" v-for="comment in comments" :key="comment.id">
-                <div class="flex gap-2 items-start  p-2">
+            <li class="relative flex flex-col" v-for="comment in comments" :key="comment.id">
+                <div class="flex gap-2 items-start p-2">
                     <img :src="comment.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
                         @click="router.push('/user/' + comment.authorId)"
                         class="w-4 h-4 object-cover rounded-full cursor-pointer">
@@ -78,20 +78,20 @@
                             </div>
                         </div>
                         <p v-if="commentEditIndex !== comment.id" class="py-2 text-sm">{{ comment.content }}</p>
-                        <textarea v-else v-model="commentEditContent" placeholder="Edit comment"
-                            class="py-1 px-2 bg-back rounded-lg border-main border-0.5"
-                            oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                        <div v-else class="flex flex-col gap-2 mt-2 justify-end">
+                            <DefaultTextField v-model="commentEditContent" :placeholder="'Edit comment'" class="" />
+                            <div class="flex gap-2 justify-end">
+                                <DefaultButton @click="commentEditIndex = undefined; commentEditContent = ''"
+                                    :type="'cancel'" :content="'취소'" />
+                                <DefaultButton @click="onCommentEditSubmit" :type="'submit'" :content="'저장'" />
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div v-if="commentEditIndex === comment.id" class="flex gap-2 justify-end">
-                    <button @click="commentEditIndex = undefined; commentEditContent = ''"
-                        class="px-4 py-1 rounded-full border-0.5 border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold text-xs w-fit">Cancel</button>
-                    <button @click="onCommentEditSubmit"
-                        class="px-4 py-1 rounded-full border-0.5 border-main text-main hover:bg-main hover:text-white font-semibold text-xs w-fit">Confirm</button>
                 </div>
                 <!-- <div class="absolute w-[1px] h-[calc(100%-28px)] bottom-0 left-[10px] bg-gray-700"></div> -->
                 <ul class="flex flex-col divide-y-0.5 divide-gray-800 border-t-0.5 border-gray-800 bg-gray-900">
-                    <li class="relative flex flex-col gap-2 p-2 pl-4 border-l-4 border-gray-800" v-for="reply in comment.replies" :key="reply.id">
+                    <li class="relative flex flex-col gap-2 p-2 pl-4 border-l-4 border-gray-800"
+                        v-for="reply in comment.replies" :key="reply.id">
                         <div class="flex gap-2 items-start">
                             <img :src="reply.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
                                 @click="router.push('/user/' + comment.authorId)"
@@ -131,51 +131,43 @@
                         </div>
                         <!-- <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[8px] bg-gray-700"></div> -->
                     </li>
-                    <li v-if="replyIndex === comment.id" class="relative flex flex-col gap-2 ">
+                    <li v-if="replyIndex === comment.id" class="relative flex flex-col gap-2 p-2">
                         <div class="flex gap-2 items-start">
                             <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
                                 class="w-4 h-4 object-cover rounded-full">
                             <div class="flex flex-col gap-2 grow">
-                                <div class="flex gap-2 items-center">
-                                    <h3 class=" text-sm">{{ AuthHelper.getUser().username }}</h3>
-                                    <span class="text-xs text-main font-semibold">New</span>
+                                <div class="flex gap-2 items-center text-[11px]">
+                                    <h3 class="">{{ AuthHelper.getUser().username }}</h3>
+                                    <span class=" text-main font-semibold">New</span>
                                 </div>
-                                <textarea v-model="replyContent" placeholder="Your reply"
-                                    class="py-1 px-2 bg-back rounded-lg border-main border-0.5"
-                                    oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                                <DefaultTextField v-model="replyContent" :placeholder="'댓글을 남겨주세요'" class="" />
+
                             </div>
                         </div>
-                        <button @click="onReplySubmit"
-                            class="text-xs ml-auto py-1 px-2 font-semibold text-main hover:text-white hover:bg-main border-main border-0.5 rounded-full">Reply</button>
-                        <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[6px] bg-main-light">
-                        </div>
+                        <DefaultButton @click="onReplySubmit" :type="'submit'" :content="'등록'" class="ml-auto">
+                        </DefaultButton>
                     </li>
                 </ul>
             </li>
-            <li class="relative flex flex-col gap-2 ">
+            <li class="relative flex flex-col gap-2 p-2 outline-main outline">
                 <div class="flex gap-2 items-start">
                     <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
                         class="w-4 h-4 object-cover rounded-full">
                     <div class="flex flex-col gap-2 grow">
-                        <div class="flex gap-2 items-center">
-                            <h3 class=" text-sm">{{ AuthHelper.getUser().username }}</h3>
-                            <span class="text-xs text-main font-semibold">New</span>
+                        <div class="flex gap-2 items-center text-[11px]">
+                            <h3 class="">{{ AuthHelper.getUser().username }}</h3>
+                            <span class=" text-main font-semibold">New</span>
                         </div>
-                        <textarea v-model="commentContent" placeholder="Your comment"
-                            class="py-1 px-2 bg-back rounded-lg border-main border-0.5"
-                            oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                        <DefaultTextField v-model="commentContent" :placeholder="'댓글을 남겨주세요'" class="" />
                     </div>
                 </div>
-                <button @click="onCommentSubmit"
-                    class="text-xs ml-auto py-1 px-2 font-semibold text-main hover:text-white hover:bg-main border-main border-0.5 rounded-full">Comment</button>
-                <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[6px] bg-main-light">
-                </div>
+                <DefaultButton @click="onCommentSubmit" :type="'submit'" :content="'등록'" class="ml-auto"></DefaultButton>
             </li>
         </ul>
         <ul ref="pageButtonsRef" class="flex gap-2 flex-wrap justify-center">
             <li v-for="index in Math.ceil(commentCount / commentPageSize)">
-                <button @click="onPageClick(index)" :class="{ 'bg-main text-white': index === commentPage + 1 }"
-                    class="px-4 py-1 rounded-full border-0.5 border-main text-main hover:bg-main hover:text-white font-semibold">{{
+                <button @click="onPageClick(index)" :class="{ 'shadow-md text-gray-300': index === commentPage + 1 }"
+                    class="px-4 py-1 rounded border-0.5 border-gray-700 bg-gray-800 hover:text-gray-300 shadow-main transition duration-100 ease-in-out">{{
                         index }}</button>
             </li>
         </ul>
@@ -191,6 +183,8 @@ import PhotoVCard from '@/components/PhotoVCard.vue';
 import PhotoExifPanel from '@/components/PhotoExifPanel.vue';
 import SectionHeader from '@/components/SectionHeader.vue';
 import Skeleton from '@/components/Skeleton.vue';
+import DefaultTextField from '@/components/DefaultTextField.vue';
+import DefaultButton from '@/components/DefaultButton.vue';
 
 
 const router = useRouter()
@@ -380,10 +374,10 @@ const updateComments = async () => {
     let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/comments?articleId=${route.params.id}&forumCommentSorts=Added&isDescending=false&pageIndex=${commentPage}&pageLimit=${commentPageSize}`)
 
     await Promise.all(result.data.map(async (comment) => {
-        comment.username = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${comment.authorId}`).then((result) => result.data.userName)
+        comment.user = (await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${comment.authorId}`)).data
         comment.replies = (await axios.get(`${import.meta.env.VITE_API_URL}/api/comments/${comment.id}/replies`)).data
         comment.replies = await Promise.all(comment.replies.map(async (reply) => {
-            reply.username = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${reply.authorId}`).then((result) => result.data.userName)
+            reply.user = (await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${reply.authorId}`)).data
             return reply
         }))
     }))

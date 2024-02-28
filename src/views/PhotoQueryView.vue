@@ -3,10 +3,6 @@
         <div class="flex">
             <QueryParamsBuilder :initial="route.query.query?.split('_')" :option-tree="options"
                 @query-changed="onQueryChanged" class="grow" />
-            <!-- <button @click="onLayoutToggle"
-                class="flex items-center justify-center text-xs px-4 py-1 rounded-full border-gray-500 border-0.5 mr-4">
-                <span class="material-icons">{{ layout === "vertical" ? "수직" : "블록" }}</span>
-            </button> -->
         </div>
         <div v-if="isUnsupportedQuery" class="flex flex-col items-center my-10 gap-2">
             <span class="font-semibold text-2xl text-main">🙏 Sorry..</span>

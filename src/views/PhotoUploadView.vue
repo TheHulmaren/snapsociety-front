@@ -1,28 +1,48 @@
 <template>
     <div class="flex flex-col gap-6 p-4">
+        <p class="bg-gray-800 border-gray-700 border-0.5 rounded text-xs px-4 py-2 leading-6">
+            지원되는 이미지 포맷: <b>JPG, JPEG, PNG, WEBP, TIFF</b>
+            <br>
+            이미지 최대 크기: <b>30MB</b>
+            <br>
+            최대 동시 업로드 가능 이미지 수: <b>{{ imageFiles.length }}/10 pics</b>
+        </p>
         <ul v-if="imageFiles.length > 0" class="flex flex-col gap-4">
             <li class="flex gap-2" v-for="file in imageFiles" :key="file.data.name">
                 <img :src="file.path"
-                    class="w-1/4 aspect-square rounded-xl object-contain bg-button-back-light border-0.5 border-stroke-light">
+                    class="w-1/4 aspect-square rounded object-contain bg-gray-800 border-0.5 border-gray-700">
                 <form class="flex flex-col grow gap-2">
                     <DefaultTextField v-model="file.info.title" type="input" :placeholder="'사진 제목'" />
-                    <DefaultTextField v-model="file.info.desc" type="textarea" :placeholder="'사진을 설명해주세요!'" class="grow" />
+                    <DefaultTextField v-model="file.info.desc" type="textarea" :placeholder="'(선택) 사진을 설명해주세요!'"
+                        class="grow" />
                     <DefaultButton @click="deleteImage(file)" type="cancel" class="self-end" content="🗑️ 삭제">
                     </DefaultButton>
                 </form>
             </li>
         </ul>
-        <div v-else @click="() => imageInput.click()"
-            class="flex flex-col gap-2 items-center py-6 border-main border-0.5 rounded-xl cursor-pointer">
-            <span class="font-semibold text-sm text-main">📂 사진을 선택해주세요</span>
-            <span class="text-xs ml-1">한번에 최대 10장까지 업로드할 수 있어요!</span>
-        </div>
+
         <form @submit.prevent="" class="flex flex-col">
             <input @change="onImageSubmit" id="imageInput" type="file" name="file" multiple style="display:none;"
                 accept="image/jpg, image/jpeg, image/png, image/webp, image/tiff" />
-            <DefaultButton v-if="imageFiles.length > 0" @click="() => imageInput.click()" type="primary" content="📂 사진 추가하기" class="self-center"></DefaultButton>
-        </form> 
+            <DefaultButton @click="() => imageInput.click()" type="primary" content="📂 사진 추가하기" class="self-center">
+            </DefaultButton>
+        </form>
         <DefaultButton @click="onUploadClick" type="submit" content="🛜 업로드하기" class="self-end"></DefaultButton>
+    </div>
+    <div v-if="showUploadIndicator"
+        class="fixed top-0 left-0 w-screen h-screen bg-gray-950 bg-opacity-50 z-50 flex flex-col items-center justify-center gap-4 backdrop-blur-sm">
+        <div class="flex flex-col gap-4 h-fit w-fit bg-gray-800 rounded p-4 border-0.5 border-gray-700 shadow-lg">
+            <div class="flex gap-4 items-center">
+                <div class="w-80 h-4 bg-gray-900">
+                    <div class="animate-pulse h-full bg-main rounded transition-all duration-200"
+                        :style="`width: ${uploadedCount / imageFiles.length * 100}%;`"></div>
+                </div>
+                <span>{{ uploadedCount }} / {{ imageFiles.length }}</span>
+            </div>
+            <span class=" animate-pulse">🌏🚀 사진을 업로드 중입니다..</span>
+            <span>잠시만 기다려 주세요</span>
+            <span class="text-xs">페이지를 새로고침하거나 나가시면 업로드가 정상적으로 진행되지 않습니다.</span>
+        </div>
     </div>
 </template>
 <script setup>
@@ -31,10 +51,14 @@ import DefaultTextField from '@/components/DefaultTextField.vue';
 import axios from 'axios';
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import ModalWrapperView from './ModalWrapperView.vue';
+import { AuthHelper } from '@/helpers/AuthHelper';
 
 const router = useRouter()
 
 const imageFiles = ref([])
+const uploadedCount = ref(0)
+const showUploadIndicator = ref(false)
 
 var imageInput = null
 
@@ -57,7 +81,7 @@ const onImageSubmit = async () => {
         return {
             data: file,
             info: {
-                title: "",
+                title: file.name,
                 desc: "",
             },
             path: URL.createObjectURL(file)
@@ -75,19 +99,20 @@ const onUploadClick = async () => {
         alert("📁🛜 업로드할 사진이 ㅇ벗습니다..")
         return
     }
-    if (imageFiles.value.some((file) => file.info.title === "") || imageFiles.value.some((file) => file.info.desc === "")) {
-        alert("📁🛜 흠.. 제목이나 설명을 빠뜨리신 사진이 있는 것 같아요")
+    if (imageFiles.value.some((file) => file.info.title === "")) {
+        alert("📁🛜 흠.. 제목을 빠뜨리신 사진이 있는 것 같아요")
         return
     }
+
+    showUploadIndicator.value = true
     var uploadedId = []
+    uploadedCount.value = 0
     try {
         await Promise.all(imageFiles.value.map(async (file) => {
             let formData = new FormData();
             formData.append("photo", file.data)
             let uploaded = await axios.post(import.meta.env.VITE_API_URL + "/api/photos/preUpload", formData)
             uploadedId.push(uploaded.data.id)
-
-            console.log(uploaded.data)
 
             let request = {
                 "id": uploaded.data.id,
@@ -100,17 +125,22 @@ const onUploadClick = async () => {
                 "s3LargeKey": uploaded.data.s3LargeKey,
                 "isPreUploaded": false
             }
+
             await axios.put(`${import.meta.env.VITE_API_URL}/api/photos/${uploaded.data.id}`, request)
+            uploadedCount.value++
         }))
-        alert("📁🛜 Successfully uploaded images")
-        router.push("/")
+
+        await new Promise(r => setTimeout(r, 1500));
     }
     catch {
+        showUploadIndicator.value = false
         await Promise.all(uploadedId.map(async (id) => {
             await axios.delete(`${import.meta.env.VITE_API_URL}/api/photos/${id}`)
         }))
-        alert("📁🛜 Failed to upload images")
+        alert("📂❌ 사진 업로드에 실패했습니다ㅠㅠ\n이미지 포맷 및 사이즈를 다시 확인해주세요!")
         return
     }
+    alert("📁🛜 사진 업로드 완료!\n프로필로 이동합니다..")
+    router.push("/user/" + AuthHelper.getUser().id + "/photos")
 }
 </script>

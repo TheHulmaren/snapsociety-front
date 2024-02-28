@@ -8,9 +8,9 @@
                     :content="articleType.name" :is-selected="articleType.slug === post.articleTypeId" />
             </li>
         </ul>
-        <form class="flex flex-col items-end gap-4">
+        <form class="flex flex-col gap-4 [&_.ck-content]:prose [&_.ck-content]:prose-slate [&_.ck-content]:prose-invert [&_.ck-content]:max-w-none">
             <DefaultTextField v-model="post.title" :placeholder="'제목'" />
-            <textarea id="postUploadContentTextarea"></textarea>
+            <ckeditor :editor="Editor" v-model="editorHTML"/>
         </form>
         <SectionHeader v-if="post.articleTypeId === 'photo' && photos.length > 0"
             :content="'💁‍♂️ 드래그 앤 드롭으로 사진의 순서를 조정할 수 있습니다'" />
@@ -20,15 +20,17 @@
             <template #item="{ element }">
                 <li class="flex items-stretch gap-2 w-full">
                     <img :src="element.data.thumbnailUrl"
-                        class="w-1/4 aspect-square rounded-md object-contain bg-button-back-light border-0.5 border-stroke-light">
-                    <textarea type="text" v-model="element.caption" placeholder="사진 아래에 보일 캡션을 적어주세요!"
-                        class="w-full py-2 px-4 rounded-lg grow bg-button-back-light border-0.5 border-stroke-light font-normal"></textarea>
+                        class="w-1/4 md:w-1/6 aspect-square rounded object-contain bg-gray-800 border-0.5 border-gray-700">
+                    <textarea type="text" v-model="element.caption" placeholder="(선택) 사진 아래에 보일 캡션을 적어주세요!"
+                        class="w-full py-2 px-4 rounded grow bg-gray-950 border-0.5 border-gray-700 font-normal"></textarea>
                 </li>
             </template>
         </draggable>
-        <DefaultButton v-if="post.articleTypeId === 'photo'" class="self-center" content="📂 사진 선택"
+        <span v-if="post.articleTypeId === 'photo'" class="text-xs self-center">아직 사진을 업로드하지 않으셨나요? <RouterLink to="/submit/photo" class="underline">업로드 하러가기</RouterLink></span>
+        <DefaultButton v-if="post.articleTypeId === 'photo'" class="self-center" content="🎞️ 사진 선택"
             @click="showModal = true"></DefaultButton>
-        <DefaultButton v-if="props.mode === 'write' || props.mode === undefined" class="self-end" type="submit" @click="onPostSubmit" :content="'글쓰기'"></DefaultButton>
+        <DefaultButton v-if="props.mode === 'write' || props.mode === undefined" class="self-end" type="submit"
+            @click="onPostSubmit" :content="'글쓰기'"></DefaultButton>
         <DefaultButton v-else class="self-end" type="submit" @click="onPostEdit" :content="'수정하기'"></DefaultButton>
         <ModalWrapperView v-if="showModal" @on-close="showModal = false">
             <PhotoSelectView :page-limit="10" :columns="2" v-model="selection" @on-confirm="onSelectionConfirmed"
@@ -49,6 +51,10 @@ import DefaultButton from '@/components/DefaultButton.vue';
 import PhotoVCard from '@/components/PhotoVCard.vue';
 import DefaultTextField from '@/components/DefaultTextField.vue';
 
+import Editor from '../Editor'
+import '../assets/ckeditor-custom.css';
+
+
 const router = useRouter()
 
 const props = defineProps(['mode', 'id'])
@@ -63,13 +69,39 @@ const showModal = ref(false)
 const selection = ref({})
 const photos = ref([])
 const drag = ref(false)
+const editorHTML = ref("")
 
-// photo
-// casual
-// ask
-// from-dev
-// to-dev
-// in korean with emojis
+const editorConfig = {
+    toolbar: {
+        items: [
+            'heading',
+            '|',
+            'bold',
+            'italic',
+            'link',
+            'bulletedList',
+            'numberedList',
+            '|',
+            'outdent',
+            'indent',
+            '|',
+            'imageInsert',
+            'blockQuote',
+            'insertTable',
+            'undo',
+            'redo'
+        ]
+    },
+    language: 'ko',
+    table: {
+        contentToolbar: [
+            'tableColumn',
+            'tableRow',
+            'mergeTableCells'
+        ]
+    },
+    height: 300
+}
 
 const dragOptions = {
     animation: 200,
@@ -106,61 +138,9 @@ const articleTypes = [
     }
 ]
 
-var textarea = null;
-
-// bold
-// italic
-// underline
-// strike
-// subscript
-// superscript
-// left
-// center
-// right
-// justify
-// font
-// size
-// color
-// removeformat
-// cut
-// copy
-// paste
-// pastetext
-// bulletlist
-// orderedlist
-// table
-// code
-// quote
-// horizontalrule
-// image
-// email
-// link
-// unlink
-// emoticon
-// youtube
-// date
-// time
-// ltr
-// rtl
-// print
-// maximize
-// source
 
 onMounted(async () => {
     post.value.authorId = AuthHelper.getUser().id
-
-    textarea = document.getElementById("postUploadContentTextarea");
-
-    sceditor.create(textarea, {
-        width: "100%",
-        height: "400px",
-        plugins: 'undo',
-        format: "bbcode",
-        // | divides groups, comma divides individual buttons
-        // set minimal toolbar
-        toolbar: "bold,italic,underline,strike,font|left,center,right,justify|font,size,color,removeformat|cut,copy,paste,pastetext|bulletlist,orderedlist,table,image,youtube|date,time",
-        style: "minified/themes/content/default.min.css",
-    });
 
     if (props.mode === "edit") {
         await loadEditInitialData()
@@ -185,7 +165,8 @@ const onSelectionConfirmed = (selectedPhotos) => {
 const loadEditInitialData = async () => {
     let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/forumArticles/${props.id}`)
     post.value = result.data
-    sceditor.instance(textarea).val(result.data.contentText)
+
+    editorHTML.value = post.value.contentText
     if (result.data.articleTypeId !== "photo") {
         return
     }
@@ -212,13 +193,14 @@ const onTypeClicked = (type) => {
 }
 
 const validatePost = () => {
-    if (post.value.title === "" || sceditor.instance(textarea).val() === "") {
-        alert("📁⁉️ Please fill in all fields")
+    let content = editorHTML.value
+    if (post.value.title === "" || content === "") {
+        alert("📁⁉️ 제목과 내용을 입력해 주세요!")
         return false
     }
 
     if (post.value.articleTypeId === "photo" && photos.value.length === 0) {
-        alert("📁⁉️ Please select at least one photo")
+        alert("📁⁉️ 사진을 최소 한장 선택해 주세요")
         return false
     }
 
@@ -226,12 +208,13 @@ const validatePost = () => {
 }
 
 const onPostEdit = async () => {
+    
     if (!validatePost()) {
         return
     }
 
     let articleId = null
-    var contentTextHtml = sceditor.instance(textarea).val()
+    var contentTextHtml = editorHTML.value
     try {
         let result = await axios.put(`${import.meta.env.VITE_API_URL}/api/forumArticles/${props.id}`,
             {
@@ -257,7 +240,7 @@ const onPostEdit = async () => {
         router.push(`/posts/${articleId}`)
         alert("✅ Edited!")
     }
-    catch(e) {
+    catch (e) {
         console.log(e)
         alert("🛜⁉️ Failed to edit")
     }
@@ -270,7 +253,7 @@ const onPostSubmit = async () => {
 
     let articleUploaded = false
     let articleId = null
-    var contentTextHtml = sceditor.instance(textarea).val()
+    var contentTextHtml = editorHTML.value
 
     try {
         let result = await axios.post(import.meta.env.VITE_API_URL + "/api/forumArticles",
@@ -297,7 +280,7 @@ const onPostSubmit = async () => {
         router.push("/main/posts")
         alert("✅ Posted!")
     }
-    catch(e) {
+    catch (e) {
         if (articleUploaded) {
             await axios.delete(`${import.meta.env.VITE_API_URL}/api/forumArticles/${articleId}`)
         }

@@ -1,5 +1,5 @@
 <template>
-    <li @click="router.push(`/photos/${photo.id}`)" class="flex flex-col gap-2 p-4 cursor-pointer hover:bg-gray-800 transition duration-100 ease-in-out">
+    <li class="flex flex-col gap-2 p-4 cursor-pointer hover:bg-gray-800 transition duration-100 ease-in-out">
         <div v-if="props.showProfile" class="flex items-center gap-2">
             <img @click="router.push(`/user/${photo.user.id}`)"
                 class="w-6 h-6 rounded-full object-cover hover:cursor-pointer"
@@ -12,7 +12,7 @@
                 props.photo.likeCount
             }}</button>
         </div>
-        <img class="rounded"
+        <img  @click="router.push(`/photos/${photo.id}`)" class="rounded border-gray-700 border-0.5"
             :src="props.photo.largeUrl ?? props.photo.mediumUrl ?? props.photo.smallUrl ?? props.photo.thumbnailUrl ?? props.photo.url"
             :alt="props.photo.desc" />
     </li>

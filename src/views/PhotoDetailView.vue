@@ -1,7 +1,7 @@
 <template>
     <Skeleton v-if="isLoading" />
     <div v-else class="flex flex-col p-4 gap-6">
-        <img :src="photo.largeUrl" class=" max-h-[450px] object-contain bg-gray-800 rounded overflow-y-auto"
+        <img :src="photo.largeUrl" class=" max-h-[450px] object-contain bg-gray-800 rounded overflow-y-auto cursor-pointer"
             @click="enlarged = !enlarged">
         <div class="flex justify-between items-center">
             <SectionHeader content="✍️ 제목과 설명" />
@@ -41,7 +41,7 @@
             </li>
         </ul>
     </div>
-    <div v-if="enlarged" @click="enlarged = false" class="fixed w-screen h-screen top-0 left-0 z-30">
+    <div v-if="enlarged" @click="enlarged = false" class="fixed w-screen h-screen top-0 left-0 z-30 cursor-pointer">
         <div class="w-full h-full absolute bg-black opacity-80">
         </div>
         <PhotoExifPanel v-if="photo.exifTags" :exif="photo.exifTags"

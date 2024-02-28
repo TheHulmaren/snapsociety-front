@@ -1,22 +1,20 @@
 <template>
     <div class="px-4 py-2 gap-4 flex items-center border-b-0.5 border-b-stroke-light dark:border-b-gray-800">
-        <h1 @click="router.push('/')" class="text-sm font-semibold text-main hover:cursor-pointer">
-            Snap 📸<br>Society
-        </h1>
+        <img @click="router.push('/')" src="/icon-512-maskable.png" class="w-8 h-8 rounded hover:cursor-pointer"/>
         <form @submit.prevent="router.push('/search-photo?query=' + searchQuery)" class="grow">
-            <input v-model="searchQuery" placeholder="🔍   사진을 (영어로) 묘사해 주세요"
-                class="py-2 px-4 rounded w-full bg-button-back-light dark:bg-gray-950 border border-stroke-light dark:border-gray-800 text-xs font-normal text-text-searchbar" />
+            <input v-model="searchQuery" placeholder="🔍   사진을 묘사해 주세요!"
+                class="py-2 px-4 rounded w-full bg-button-back-light dark:bg-gray-950 border border-gray-700 text-xs font-normal text-text-searchbar focus:outline-none focus:ring-2 ring-main transition duration-200 ease-in-out" />
         </form>
         <div class="relative">
             <img v-if="isAuthed" @click="onProfileClicked"
-                class="w-8 h-8 rounded-full object-cover object-left-top hover:cursor-pointer"
+                class="w-8 h-8 rounded-full object-cover object-left-top hover:cursor-pointer outline-main outline"
                 :src="user.profilePhotoUrl ?? '/default-prof-img.webp'">
             <button @click="router.push('/login')" v-else
-                class="py-2 px-4 rounded-full border-0.5 border-main text-xs font-semibold text-main">
+                class="py-2 px-4 rounded border-0.5 border-gray-700 text-xs font-semibold text-main">
                 Login
             </button>
             <div
-                class="flex absolute top-100 right-0 rounded-xl bg-white shadow-md border-stroke-light border mt-2 transition-all z-50">
+                class="flex absolute top-100 right-0 rounded border-gray-700 border mt-2 transition-all  z-50">
                 <ProfileActions v-if="isAuthed && showProfileActions" @on-select="showProfileActions = false" />
             </div>
         </div>

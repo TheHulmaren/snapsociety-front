@@ -7,7 +7,7 @@
             accept="image/jpg, image/jpeg, image/png, image/webp, image/tiff" />
         <div class="main-section my-4 px-4 flex flex-col items-center -mt-16 md:-mt-20 gap-4">
             <img @click="onProfileImgClicked" :src="user.profilePhotoUrl ?? '/default-prof-img.webp'" alt="프로필 사진"
-                class="w-24 md:w-32 aspect-square rounded-full object-cover hover:cursor-pointer relative z-10 border-white border-4 cursor-pointer">
+                class="w-24 md:w-32 aspect-square rounded-full object-cover hover:cursor-pointer relative z-10 border-gray-900 border-4 cursor-pointer">
             <h2 class="text-xl font-semibold">{{ user.userName }}</h2>
             <DefaultTextField v-model="user.userName" :placeholder="'닉네임'" v-if="showBioEdit" />
             <DefaultTextField v-model="user.bio" type="textarea" :placeholder="'프로필 메세지를 입력하세요'" v-if="showBioEdit" />
@@ -79,6 +79,7 @@ const onBannerSelected = async (selected) => {
     let result = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${route.params.id}`, {
         userName: user.value.userName,
         bio: user.value.bio,
+        email: user.value.email,
         bannerPhotoId: selected[0].id
     })
     user.value = result.data
@@ -89,6 +90,7 @@ const onBioSaved = async () => {
     let result = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${route.params.id}`, {
         userName: user.value.userName,
         bio: user.value.bio,
+        email: user.value.email,
         bannerPhotoId: user.value.bannerPhoto?.id
     })
     user.value = result.data

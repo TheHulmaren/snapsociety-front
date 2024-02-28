@@ -11,12 +11,7 @@
       rel="stylesheet"
     />
     <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/default.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/sceditor@3/minified/sceditor.min.js"></script>
-    <script src="minified/formats/bbcode.js"></script>
+    <script src="node_modules/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
     <title>스냅 소사이어티</title>
   </head>
   <body class=" bg-back dark:bg-gray-950 text-text-dark dark:text-gray-400 relative">
@@ -27,6 +22,18 @@
     * {
       scrollbar-gutter: stable;
       font-family: "Noto Sans KR", sans-serif;
+    }
+
+    /* make scroll bar transparent */
+    ::-webkit-scrollbar {
+      width: 2px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #888;
     }
 
     .sceditor-container iframe {

@@ -128,7 +128,10 @@ const router = createRouter({
         {
           path: "photos",
           name: "user-photos",
-          props: (route) => ({ uploaderId: route.params.id, defaultQuery: "🕗 업로드_👇 최신 순"}),
+          props: (route) => ({
+            uploaderId: route.params.id,
+            defaultQuery: "🕗 업로드_👇 최신 순",
+          }),
           component: () => import("../views/PhotoQueryView.vue"),
         },
         {
@@ -167,6 +170,11 @@ const router = createRouter({
       component: () => import("../views/LoginView.vue"),
     },
     {
+      path: "/signUp",
+      name: "signUp",
+      component: () => import("../views/SignUpView.vue"),
+    },
+    {
       path: "/userSettings",
       name: "userSettings",
       component: () => import("../views/UserSettingsView.vue"),
@@ -194,15 +202,18 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   // Redirect to login if not authed
-  if (to.name !== "login" && !(await AuthHelper.checkIfAuthed())) {
+  if (
+    !["signUp", "login"].includes(to.name) &&
+    !(await AuthHelper.checkIfAuthed())
+  ) {
     console.log("not authed");
-    return { name: "login" };
+    return { name: "signUp" };
   }
 
   // Redirect to ban page if banned
   // but allow logging out and settings
   if (
-    !["userSettings", "banned", "login"].includes(to.name) &&
+    !["userSettings", "signUp", "banned", "login"].includes(to.name) &&
     (await AuthHelper.checkIfBanned(AuthHelper.getUser().id)).isBanned
   ) {
     return { name: "banned" };

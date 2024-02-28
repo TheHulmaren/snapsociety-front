@@ -28,6 +28,8 @@ export default {
       '8': '8px',
     }
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 }
 
