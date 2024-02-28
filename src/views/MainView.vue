@@ -22,36 +22,36 @@ const props = defineProps(['category'])
 
 const selectedTabSlug = ref("")
 
-watch(
-    () => props.category,
-    async () => {
-        selectedTabSlug.value = props.category
-    }
-);
+watch(() => route.fullPath, () => {
+    selectedTabSlug.value = route.path.split("/")[2]
+})
 
 onMounted(() => {
-    selectedTabSlug.value = props.category
+    selectedTabSlug.value = route.path.split("/")[2]
 })
 
 const onTabClick = (tab) => {
     selectedTabSlug.value = tab.slug
-    router.push(`/main/${tab.slug}`)
+    router.push(`/main/${tab.slug}?query=${tab.query}`)
 }
 
 const tabs = [
     {
         name: "🚀 사진 모아보기",
         slug: "photos",
+        query: "🏆%20탑_🕗%20지난%20일주일",
         buttonType: "primary"
     },
     {
         name: "🌄 사진과 글",
         slug: "posts",
+        query: "🕗%20게시일_👇%20최신%20순",
         buttonType: "primary"
     },
     {
         name: "💁‍♂️ 글 모아보기",
         slug: "all",
+        query: "🕗%20게시일_👇%20최신%20순",
         buttonType: "primary"
     },
     {
@@ -62,6 +62,7 @@ const tabs = [
     {
         name: "🙋 질문 & 답변",
         slug: "ask",
+        query: "🕗%20게시일_👇%20최신%20순",
         buttonType: "primary"
     },
     {
@@ -72,6 +73,7 @@ const tabs = [
     {
         name: "😄 잡담",
         slug: "casual",
+        query: "🕗%20게시일_👇%20최신%20순",
         buttonType: "primary"
     },
     {
@@ -82,16 +84,19 @@ const tabs = [
     {
         name: "📷💰 박스추 & 장비 자랑",
         slug: "gear",
+        query: "🕗%20게시일_👇%20최신%20순",
         buttonType: "primary"
     },
     {
         name: "➡️👨‍💻 개발자에게",
         slug: "to-dev",
+        query: "🕗%20게시일_👇%20최신%20순",
         buttonType: "primary"
     },
     {
         name: "⬅️👨‍💻 개발자로부터",
         slug: "from-dev",
+        query: "🕗%20게시일_👇%20최신%20순",
         buttonType: "primary"
     },
 ]

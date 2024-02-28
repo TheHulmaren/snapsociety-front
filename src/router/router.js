@@ -10,7 +10,7 @@ const router = createRouter({
       path: "/",
       name: "home",
       redirect: (to) => {
-        return { path: "/main/photos" };
+        return { path: "/main/photos", query: { query: "🏆 탑_🕗 지난 일주일" } };
       },
     },
     {
@@ -120,18 +120,11 @@ const router = createRouter({
     {
       path: "/user/:id",
       name: "user-profile",
-      redirect: (to) => {
-        return { path: "/user/" + to.params.id + "/photos" };
-      },
       component: () => import("../views/UserProfileView.vue"),
       children: [
         {
           path: "photos",
           name: "user-photos",
-          props: (route) => ({
-            uploaderId: route.params.id,
-            defaultQuery: "🕗 업로드_👇 최신 순",
-          }),
           component: () => import("../views/PhotoQueryView.vue"),
         },
         {

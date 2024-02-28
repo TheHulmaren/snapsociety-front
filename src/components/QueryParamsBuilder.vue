@@ -20,18 +20,6 @@ let queryTemp = []
 const props = defineProps(['optionTree', 'initial'])
 const emit = defineEmits(['queryChanged'])
 
-watch(
-    () => props.optionTree,
-    async () => {
-        currentQuery = []
-        if (props.optionTree.length === 0) {
-            options.value = []
-            emit('queryChanged', [])
-            return
-        }
-        updateAndEmits()
-    }
-);
 
 onMounted(() => {
     if (props.optionTree.length === 0) {
@@ -40,26 +28,23 @@ onMounted(() => {
     }
     if (props.initial !== undefined) {
         currentQuery = props.initial
-        options.value = []
-        queryTemp = []
-        buildQuery(props.optionTree, 0)
-        currentQuery = Object.assign({}, queryTemp);
+        updateQuery()
         return
     }
-    updateAndEmits()
+    updateQuery()
 })
 
 const onDropdownChange = (index, event) => {
     currentQuery[index] = event.target.value
-    updateAndEmits()
+    updateQuery()
+    emit('queryChanged', currentQuery)
 }
 
-const updateAndEmits = () => {
+const updateQuery = () => {
     options.value = []
     queryTemp = []
     buildQuery(props.optionTree, 0)
     currentQuery = Object.assign({}, queryTemp);
-    emit('queryChanged', currentQuery)
 }
 
 const buildQuery = (optionTree, index) => {
