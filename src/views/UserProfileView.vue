@@ -52,7 +52,7 @@ var imgInput = null
 const tabs = [
     {
         name: "📸 사진",
-        slug: "photos?query=🏆%20탑_🕗%20지난%20일주일"
+        slug: "photos?query=🕗%20게시일_👇%20최신%20순"
     },
     {
         name: "📝 게시글",
