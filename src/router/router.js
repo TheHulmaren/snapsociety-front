@@ -125,6 +125,7 @@ const router = createRouter({
         {
           path: "photos",
           name: "user-photos",
+          props: (route) => ({ uploaderId: route.params.id }),
           component: () => import("../views/PhotoQueryView.vue"),
         },
         {

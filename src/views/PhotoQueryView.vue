@@ -227,6 +227,8 @@ onMounted(async () => {
         if (listBottom <= screenBottom + 50 && !reachedEnd.value && !isLoading.value) {
             pageIndex++
             let result = await queryTable[currentQuery]();
+            result = await fetchUserData(result);
+            result = await fetchLikeInfo(result);
             if (result.length === 0) {
                 reachedEnd.value = true
                 isLoading.value = false

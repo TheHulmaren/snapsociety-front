@@ -36,8 +36,8 @@
         <SectionHeader content="📷 비슷한 사진들" />
         <ul class="flex overflow-x-scroll gap-2">
             <li class=" shrink-0 " v-for="photo in relatedPhotos" :key="photo.id">
-                <img @click="router.push({ name: 'photo-detail', params: { id: photo.id } })" :src="photo.thumbnailUrl"
-                    class="w-20 h-20 rounded-md object-cover cursor-auto">
+                <img @click="router.push({ name: 'photo-detail', params: { id: photo.id } }); isLoading = true" :src="photo.thumbnailUrl"
+                    class="w-20 h-20 rounded object-cover cursor-pointer border-0.5 border-gray-700">
             </li>
         </ul>
     </div>
@@ -80,6 +80,7 @@ watch(
     () => route.fullPath,
     async () => {
         await fetchData()
+        isLoading.value = false
     }
 );
 

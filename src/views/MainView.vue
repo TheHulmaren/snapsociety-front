@@ -2,7 +2,8 @@
     <div class="flex flex-col gap-4 py-4">
         <div class="flex flex-col gap-2 px-4">
             <ul class="flex gap-2 flex-wrap">
-                <DefaultButton class="grow" v-for="tab in tabs" :type="tab.buttonType" :key="tab.slug" :content="tab.name" :is-selected="selectedTabSlug === tab.slug" @click="onTabClick(tab)" />
+                <DefaultButton class="grow" v-for="tab in tabs" :type="tab.buttonType" :key="tab.slug" :content="tab.name"
+                    :is-selected="selectedTabSlug === tab.slug" @click="onTabClick(tab)" />
             </ul>
         </div>
         <RouterView :key="route.fullPath" />
