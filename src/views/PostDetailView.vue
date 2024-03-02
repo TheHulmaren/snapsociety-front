@@ -13,7 +13,7 @@
             <span class="text-xs py-1 px-2 w-fit rounded bg-gray-800 border-0.5 border-gray-700 text-nowrap">{{
                 articleType.titleBefore
             }}</span>
-            <h2 class="flex items-center gap-2"> {{ post.title }}</h2>
+            <h2 class="flex items-center gap-2 text-xl text-gray-300"> {{ post.title }}</h2>
             <div @click="router.push('/user/' + post.authorId)"
                 class="flex text-xs gap-2 items-stretch cursor-pointer mt-2">
                 <img :src="post.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
@@ -89,7 +89,7 @@
                     </div>
                 </div>
                 <!-- <div class="absolute w-[1px] h-[calc(100%-28px)] bottom-0 left-[10px] bg-gray-700"></div> -->
-                <ul class="flex flex-col divide-y-0.5 divide-gray-800 border-t-0.5 border-gray-800 bg-gray-900">
+                <ul class="flex flex-col divide-y-0.5 divide-gray-800 border-t-0.5 border-gray-800 bg-gray-950">
                     <li class="relative flex flex-col gap-2 p-2 pl-4 border-l-4 border-gray-800"
                         v-for="reply in comment.replies" :key="reply.id">
                         <div class="flex gap-2 items-start">
@@ -149,7 +149,7 @@
                     </li>
                 </ul>
             </li>
-            <li class="relative flex flex-col gap-2 p-2 outline-main outline">
+            <li class="relative flex flex-col gap-2 p-2 border-l-4 border-main bg-gray-700">
                 <div class="flex gap-2 items-start">
                     <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
                         class="w-4 h-4 object-cover rounded-full">
