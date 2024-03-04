@@ -1,7 +1,8 @@
 <template>
-    <div class="gap-4 flex flex-col">
+    <Skeleton v-if="isLoading" />
+    <div v-else class="gap-4 flex flex-col">
         <div @click="onBannerClicked" class="w-full aspect-[21/9] cursor-pointer overflow-hidden">
-            <img :src="user.bannerPhoto?.largeUrl ?? '/default-banner-img.jpg'" alt="배너 사진" class="w-full h-full object-cover object-center">
+            <img :src="user.bannerPhoto?.largeUrl ?? '/prof-back.jpg'" alt="배너 사진" class="w-full h-full object-cover object-center">
         </div>
         <input @change="onProfilePhotoSubmit" id="imageInput" type="file" name="file" style="display:none;"
             accept="image/jpg, image/jpeg, image/png, image/webp, image/tiff" />
@@ -38,6 +39,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ModalWrapperView from './ModalWrapperView.vue';
 import PhotoSelectView from './PhotoSelectView.vue';
+import Skeleton from '../components/Skeleton.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -46,6 +48,7 @@ const user = ref({});
 const selectedTabSlug = ref("")
 const showBioEdit = ref(false)
 const showModal = ref(false)
+const isLoading = ref(true)
 
 var imgInput = null
 
@@ -115,6 +118,8 @@ onMounted(async () => {
     imgInput = document.getElementById("imageInput")
     let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${route.params.id}`)
     user.value = result.data
+
+    isLoading.value = false
 })
 
 </script>

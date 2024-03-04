@@ -36,6 +36,7 @@
     "vue-marquee-text-component": "^2.0.1",
     "vue-router": "^4.2.5",
     "vuedraggable": "^4.1.0",
+    "vuex": "^4.0.2",
     "webpack": "^5.90.2",
     "webpack-cli": "^4.10.0"
   },

@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import axios from "axios";
 
+import store from "../infra/vuex";
+
 import { AuthHelper } from "../helpers/AuthHelper";
 
 const router = createRouter({
@@ -10,7 +12,10 @@ const router = createRouter({
       path: "/",
       name: "home",
       redirect: (to) => {
-        return { path: "/main/photos", query: { query: "🏆 탑_🕗 지난 일주일" } };
+        return {
+          path: "/main/photos",
+          query: { query: "🏆 탑_🕗 지난 일주일" },
+        };
       },
     },
     {
@@ -195,23 +200,29 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
+  if (["signUp", "login"].includes(to.name)) return true;
+
+  store.commit("setLoginLoading", true);
+  
   // Redirect to login if not authed
-  if (
-    !["signUp", "login"].includes(to.name) &&
-    !(await AuthHelper.checkIfAuthed())
-  ) {
+  if (!(await AuthHelper.checkIfAuthed())) {
     console.log("not authed");
+    store.commit("setLoginLoading", false);
     return { name: "signUp" };
   }
 
+  if (["userSettings", "banned"].includes(to.name)) {
+    store.commit("setLoginLoading", false);
+    return true;
+  }
+
   // Redirect to ban page if banned
-  // but allow logging out and settings
-  if (
-    !["userSettings", "signUp", "banned", "login"].includes(to.name) &&
-    (await AuthHelper.checkIfBanned(AuthHelper.getUser().id)).isBanned
-  ) {
+  if (await AuthHelper.checkIfBanned(AuthHelper.getUser().id).isBanned) {
+    store.commit("setLoginLoading", false);
     return { name: "banned" };
   }
+
+  store.commit("setLoginLoading", false);
   return true;
 });
 

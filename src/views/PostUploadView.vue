@@ -277,7 +277,7 @@ const onPostSubmit = async () => {
             await axios.put(`${import.meta.env.VITE_API_URL}/api/forumArticles/${articleId}/photos`, articlePhotos)
         }
 
-        router.push("/main/posts")
+        router.push("/main/all?query=🕗%20게시일_👇%20최신%20순")
         alert("✅ Posted!")
     }
     catch (e) {

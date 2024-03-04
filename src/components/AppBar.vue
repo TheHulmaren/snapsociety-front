@@ -11,7 +11,7 @@
                 :src="user.profilePhotoUrl ?? '/default-prof-img.webp'">
             <button @click="router.push('/login')" v-else
                 class="py-2 px-4 rounded border-0.5 border-gray-700 text-xs font-semibold text-main">
-                Login
+                로그인
             </button>
             <div
                 class="flex absolute top-100 right-0 rounded border-gray-700 border mt-2 transition-all  z-50">

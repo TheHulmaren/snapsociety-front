@@ -1,7 +1,7 @@
 <template>
     <li class="flex flex-col gap-2 p-4 cursor-pointer hover:bg-gray-800 transition duration-100 ease-in-out">
         <div v-if="props.showProfile" class="flex items-center gap-2">
-            <img @click="router.push(`/user/${photo.user.id}`)"
+            <img @click="router.push(`/user/${photo.user.id}?query=🕗%20업로드_👇%20최신%20순`)"
                 class="w-6 h-6 rounded-full object-cover hover:cursor-pointer"
                 :src="props.photo.user.profilePhotoUrl ?? '/default-prof-img.webp'">
             <h1 @click="router.push(`/user/${photo.user.id}`)" class=" text-xs hover:cursor-pointer">{{

@@ -11,7 +11,7 @@
         </div>
         <ul v-if="photoThumbnails.length > 0" class="flex gap-2 overflow-clip">
             <li v-for="thumbnail in photoThumbnails" :key="thumbnail" class="flex shrink-0 items-center">
-                <img :src="thumbnail" class="h-24 w-24 object-cover rounded border-gray-700 border-0.5" />
+                <img :src="thumbnail" class="h-16 w-16 sm:h-24 sm:w-24 object-cover rounded border-gray-700 border-0.5" />
             </li>
         </ul>
         <div class=" text-xs flex gap-4 items-center">

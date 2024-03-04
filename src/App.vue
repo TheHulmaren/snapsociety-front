@@ -3,6 +3,7 @@ import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import AppBar from './components/AppBar.vue'
 import DailyUpdateLabel from './components/DailyUpdateLabel.vue'
+import store from './infra/vuex'
 </script>
 
 <template>
@@ -11,8 +12,12 @@ import DailyUpdateLabel from './components/DailyUpdateLabel.vue'
       <AppBar class=" bg-white dark:bg-gray-900 shadow-md" />
       <DailyUpdateLabel />
     </header>
-    <main>
+    <main class="pb-20">
       <RouterView />
+      <div v-if="store.state.showLoginLoading" class="fixed top-0 left-0 w-screen h-screen flex flex-col justify-center items-center gap-4 backdrop-blur-md z-50">
+        <img src="/icon-512-maskable.png" class="w-12 h-12 rounded animate-pulse" />
+        <span>로딩 중..</span>
+      </div>
     </main>
   </div>
 </template>

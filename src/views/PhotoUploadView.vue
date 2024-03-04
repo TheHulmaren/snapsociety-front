@@ -141,6 +141,6 @@ const onUploadClick = async () => {
         return
     }
     alert("📁🛜 사진 업로드 완료!\n프로필로 이동합니다..")
-    router.push("/user/" + AuthHelper.getUser().id + "/photos")
+    router.push("/user/" + AuthHelper.getUser().id + "/photos?query=🕗%20업로드_👇%20최신%20순")
 }
 </script>

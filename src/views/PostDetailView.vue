@@ -131,9 +131,9 @@
                         </div>
                         <!-- <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[8px] bg-gray-700"></div> -->
                     </li>
-                    <li v-if="replyIndex === comment.id" class="relative flex flex-col gap-2 p-2">
+                    <li v-if="replyIndex === comment.id" class="relative flex flex-col gap-2 p-2 border-l-4 border-gray-800">
                         <div class="flex gap-2 items-start">
-                            <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
+                            <img :src="currentUser.profilePhotoUrl ?? '/default-prof-img.webp'"
                                 class="w-4 h-4 object-cover rounded-full">
                             <div class="flex flex-col gap-2 grow">
                                 <div class="flex gap-2 items-center text-[11px]">
@@ -151,7 +151,7 @@
             </li>
             <li class="relative flex flex-col gap-2 p-2 border-l-4 border-main bg-gray-700">
                 <div class="flex gap-2 items-start">
-                    <img src="https://t1.gstatic.com/images?q=tbn:ANd9GcQQn6_Hz9zTckXYuOa1biiMhulnHv6pKtadAFcdg79yocrL3Y29"
+                    <img :src="currentUser.profilePhotoUrl ?? '/default-prof-img.webp'"
                         class="w-4 h-4 object-cover rounded-full">
                     <div class="flex flex-col gap-2 grow">
                         <div class="flex gap-2 items-center text-[11px]">
@@ -191,6 +191,7 @@ const router = useRouter()
 const route = useRoute()
 
 const post = ref({})
+const currentUser = ref({})
 const photos = ref([])
 const isLoading = ref(false)
 const comments = ref([])
@@ -431,6 +432,10 @@ onMounted(async () => {
     // update view count
     result = await axios.post(`${import.meta.env.VITE_API_URL}/api/forumArticles/${route.params.id}/view`)
     viewCount.value = result.data.count
+
+    // fetch current user
+    currentUser.value = (await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${AuthHelper.getUser().id}`)).data
+
 
     isLoading.value = false
 })
