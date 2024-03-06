@@ -6,7 +6,7 @@
             <span class="font-semibold text-2xl text-main">🙏 Sorry..</span>
             <span class="font-sm">That query is not supported, yet.</span>
         </div>
-        <Skeleton v-if="isLoading"/>
+        <Skeleton v-if="isLoading" />
         <PostVList v-else-if="posts.length > 0" :posts="posts" />
         <div v-else>
             <div class="flex flex-col items-center my-10 gap-2">
@@ -268,6 +268,11 @@ const fetchLikeInfo = async (posts) => {
     await Promise.all(posts.map(async (post) => {
         let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/countLikes/articles/${post.id}`);
         post.likeCount = result.data;
+        if (AuthHelper.getUser() === null) {
+            post.isLikedByCurrentUser = false
+            return
+
+        };
         result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/checkIfLiked/articles/${post.id}/user/${AuthHelper.getUser().id}`);
         post.isLikedByCurrentUser = result.data;
     }));

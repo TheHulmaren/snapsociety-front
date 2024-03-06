@@ -6,12 +6,25 @@ import store from "../infra/vuex";
 import { AuthHelper } from "../helpers/AuthHelper";
 
 const router = createRouter({
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { top: 0 };
+    }
+  },
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
       name: "home",
       redirect: (to) => {
+        let user = AuthHelper.getUser();
+
+        if (!user) {
+          return { name: "sign-up" };
+        }
+
         return {
           path: "/main/photos",
           query: { query: "🏆 탑_🕗 지난 일주일" },
@@ -170,12 +183,12 @@ const router = createRouter({
     },
     {
       path: "/signUp",
-      name: "signUp",
+      name: "sign-up",
       component: () => import("../views/SignUpView.vue"),
     },
     {
       path: "/userSettings",
-      name: "userSettings",
+      name: "user-settings",
       component: () => import("../views/UserSettingsView.vue"),
     },
     {
@@ -188,7 +201,7 @@ const router = createRouter({
     },
     {
       path: "/manageBans",
-      name: "manageBans",
+      name: "manage-bans",
       component: () => import("../views/UserBanView.vue"),
     },
     {
@@ -199,25 +212,36 @@ const router = createRouter({
   ],
 });
 
+const userOnlyPages = [
+  "user-settings",
+  "banned",
+  "submit-post",
+  "submit-photo",
+  "user-profile",
+];
+
 router.beforeEach(async (to, from) => {
-  if (["signUp", "login"].includes(to.name)) return true;
+  // refresh auth token if it's expired
+  let expired = AuthHelper.checkIfExpired();
 
-  store.commit("setLoginLoading", true);
-  
-  // Redirect to login if not authed
-  if (!(await AuthHelper.checkIfAuthed())) {
-    console.log("not authed");
-    store.commit("setLoginLoading", false);
-    return { name: "signUp" };
+  // if expired, try refresh token
+  var authed = true;
+  if (expired) {
+    store.commit("setLoginLoading", true);
+    authed = await AuthHelper.refreshToken();
   }
 
-  if (["userSettings", "banned"].includes(to.name)) {
+  // redirect to login page if not authed
+  if (!authed && userOnlyPages.includes(to.name)) {
     store.commit("setLoginLoading", false);
-    return true;
+    return { name: "login" };
   }
 
-  // Redirect to ban page if banned
-  if (await AuthHelper.checkIfBanned(AuthHelper.getUser().id).isBanned) {
+  // redirect to ban page if banned
+  if (
+    authed &&
+    (await AuthHelper.checkIfBanned(AuthHelper.getUser().id)).isBanned
+  ) {
     store.commit("setLoginLoading", false);
     return { name: "banned" };
   }

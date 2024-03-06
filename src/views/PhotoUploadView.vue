@@ -6,6 +6,11 @@
             이미지 최대 크기: <b>30MB</b>
             <br>
             최대 동시 업로드 가능 이미지 수: <b>{{ imageFiles.length }}/10 pics</b>
+            <br>
+            업로드 가능 이미지 수: <b><span :class="remainingQuota > 0 ? 'text-green-500' : 'text-red-500'">{{ 10 - remainingQuota }}</span>/10 pics</b>
+            <br>
+            <span v-if="remainingQuota <= 0" class="text-red-500">이미지 업로드 한도에 이르셨습니다! 업로드는 일주일에 최대 10장까지만 가능합니다.</span>
+            <span v-else class="text-green-500">업로드는 일주일에 최대 10장까지 가능합니다.</span>
         </p>
         <ul v-if="imageFiles.length > 0" class="flex flex-col gap-4">
             <li class="flex gap-2" v-for="file in imageFiles" :key="file.data.name">
@@ -59,11 +64,16 @@ const router = useRouter()
 const imageFiles = ref([])
 const uploadedCount = ref(0)
 const showUploadIndicator = ref(false)
+const remainingQuota = ref(0)
 
 var imageInput = null
 
-onMounted(() => {
+onMounted(async() => {
     imageInput = document.getElementById("imageInput")
+
+    // get remaining upload quota
+    let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos/remainingWeeklyQuota/${AuthHelper.getUser().id}`)
+    remainingQuota.value = result.data.remaining
 })
 
 const onImageSubmit = async () => {
@@ -95,6 +105,11 @@ const deleteImage = async (file) => {
 }
 
 const onUploadClick = async () => {
+    if(remainingQuota.value - imageFiles.value.length <= 0){
+        alert("📁🛜 이미지 업로드 한도에 이르셨습니다! 업로드는 일주일에 최대 10장까지만 가능합니다.")
+        return
+    }
+
     if (imageFiles.value.length === 0) {
         alert("📁🛜 업로드할 사진이 ㅇ벗습니다..")
         return

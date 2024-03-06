@@ -1,5 +1,5 @@
 <template>
-    <li class="flex flex-col items-start py-4 px-4 gap-2 cursor-pointer hover:bg-gray-800 group transition duration-100 ease-in-out">
+    <li @click="$router.push('/posts/' + post.id)" class="flex flex-col items-start py-4 px-4 gap-2 cursor-pointer hover:bg-gray-800 group transition duration-100 ease-in-out">
         <div class="flex flex-col w-full gap-2 text-xs items-start">
             <div>
                 <span class="mr-2 text-[11px] rounded bg-gray-800  px-2 py-0.5 text-nowrap">{{ props.post.isLikedByCurrentUser ? '❤️' : '🩶' }} {{ props.post.likeCount }}</span>
@@ -30,9 +30,6 @@
 import axios from 'axios';
 import { defineProps, onMounted, ref } from 'vue';
 import { TimeHelper } from '@/helpers/TimeHelper';
-import { useRouter } from 'vue-router'
-
-const router = useRouter();
 
 const props = defineProps(['post']);
 

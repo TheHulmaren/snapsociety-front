@@ -8,33 +8,37 @@
                     :content="articleType.name" :is-selected="articleType.slug === post.articleTypeId" />
             </li>
         </ul>
-        <form class="flex flex-col gap-4 [&_.ck-content]:prose [&_.ck-content]:prose-slate [&_.ck-content]:prose-invert [&_.ck-content]:max-w-none">
+        <form
+            class="flex flex-col gap-4 [&_.ck-content]:prose [&_.ck-content]:prose-slate [&_.ck-content]:prose-invert [&_.ck-content]:max-w-none">
             <DefaultTextField v-model="post.title" :placeholder="'제목'" />
-            <ckeditor :editor="Editor" v-model="editorHTML"/>
+            <ckeditor :editor="Editor" v-model="editorHTML" />
         </form>
         <SectionHeader v-if="post.articleTypeId === 'photo' && photos.length > 0"
             :content="'💁‍♂️ 드래그 앤 드롭으로 사진의 순서를 조정할 수 있습니다'" />
-        <draggable v-if="post.articleTypeId === 'photo' && photos.length > 0" v-bind="dragOptions"
-            class="flex flex-col gap-4" v-model="photos" group="people" @start="drag = true" @end="drag = false"
+        <span class="rounded border-gray-700 border-0.5 bg-gray-800 px-4 py-1 w-fit text-xs">이미지 수: <span
+                :class="photos.length > 10 ? 'text-red-500' : 'text-green-500'">{{ photos.length }}</span>/10</span>
+        <draggable v-if=" post.articleTypeId === 'photo' && photos.length > 0 " v-bind=" dragOptions "
+            class="flex flex-col gap-4" v-model=" photos " group="people" @start="drag = true" @end="drag = false"
             item-key="data.id">
             <template #item="{ element }">
                 <li class="flex items-stretch gap-2 w-full">
-                    <img :src="element.data.thumbnailUrl"
+                    <img :src=" element.data.thumbnailUrl "
                         class="w-1/4 md:w-1/6 aspect-square rounded object-contain bg-gray-800 border-0.5 border-gray-700">
-                    <textarea type="text" v-model="element.caption" placeholder="(선택) 사진 아래에 보일 캡션을 적어주세요!"
+                    <textarea type="text" v-model=" element.caption " placeholder="(선택) 사진 아래에 보일 캡션을 적어주세요!"
                         class="w-full py-2 px-4 rounded grow bg-gray-950 border-0.5 border-gray-700 font-normal"></textarea>
                 </li>
             </template>
         </draggable>
-        <span v-if="post.articleTypeId === 'photo'" class="text-xs self-center">아직 사진을 업로드하지 않으셨나요? <RouterLink to="/submit/photo" class="underline">업로드 하러가기</RouterLink></span>
-        <DefaultButton v-if="post.articleTypeId === 'photo'" class="self-center" content="🎞️ 사진 선택"
+        <span v-if=" post.articleTypeId === 'photo' " class="text-xs self-center">아직 사진을 업로드하지 않으셨나요? <RouterLink
+                to="/submit/photo" class="underline">업로드 하러가기</RouterLink></span>
+        <DefaultButton v-if=" post.articleTypeId === 'photo' " class="self-center" content="🎞️ 사진 선택"
             @click="showModal = true"></DefaultButton>
-        <DefaultButton v-if="props.mode === 'write' || props.mode === undefined" class="self-end" type="submit"
-            @click="onPostSubmit" :content="'글쓰기'"></DefaultButton>
-        <DefaultButton v-else class="self-end" type="submit" @click="onPostEdit" :content="'수정하기'"></DefaultButton>
-        <ModalWrapperView v-if="showModal" @on-close="showModal = false">
-            <PhotoSelectView :page-limit="10" :columns="2" v-model="selection" @on-confirm="onSelectionConfirmed"
-                :initial-selection="photos.map((p) => p.data)" />
+        <DefaultButton v-if=" props.mode === 'write' || props.mode === undefined " class="self-end" type="submit"
+            @click=" onPostSubmit " :content=" '글쓰기' "></DefaultButton>
+        <DefaultButton v-else class="self-end" type="submit" @click=" onPostEdit " :content=" '수정하기' "></DefaultButton>
+        <ModalWrapperView v-if=" showModal " @on-close="showModal = false">
+            <PhotoSelectView :page-limit=" 10 " :columns=" 2 " v-model=" selection " @on-confirm=" onSelectionConfirmed "
+                :initial-selection=" photos.map((p) => p.data) " />
         </ModalWrapperView>
     </div>
 </template>
@@ -208,8 +212,13 @@ const validatePost = () => {
 }
 
 const onPostEdit = async () => {
-    
+
     if (!validatePost()) {
+        return
+    }
+
+    if(photos.value.length > 10){
+        alert("📁🛜 사진은 최대 10장까지만 첨부할 수 있어요!")
         return
     }
 
@@ -248,6 +257,11 @@ const onPostEdit = async () => {
 
 const onPostSubmit = async () => {
     if (!validatePost()) {
+        return
+    }
+
+    if(photos.value.length > 10){
+        alert("📁🛜 사진은 최대 10장까지만 첨부할 수 있어요!")
         return
     }
 

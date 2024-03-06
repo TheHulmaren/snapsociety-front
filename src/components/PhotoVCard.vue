@@ -14,11 +14,10 @@
                 props.photo.likeCount
             }}</button>
         </div>
-        <img @click="showDetailModal = true" class="rounded border-gray-700 border-0.5"
+        <img @click="router.push('/photos/'+photo.id)" class="rounded border-gray-700 border-0.5"
             :src="props.photo.largeUrl ?? props.photo.mediumUrl ?? props.photo.smallUrl ?? props.photo.thumbnailUrl ?? props.photo.url"
             :alt="props.photo.desc" />
     </li>
-    <PhotoDetailModal v-if="showDetailModal" :photo-id="props.photo.id" @on-close="showDetailModal = false"/>
 </template>
 <script setup>
 import axios from 'axios';
@@ -27,16 +26,18 @@ import { TimeHelper } from '@/helpers/TimeHelper';
 import { defineProps } from 'vue'
 import { useRouter } from 'vue-router'
 import { AuthHelper } from '@/helpers/AuthHelper';
-import PhotoDetailModal from '@/views/PhotoDetailModal.vue';
 
 const router = useRouter();
 
 const props = defineProps(['photo', 'showProfile'])
 
 const isLiked = ref(false)
-const showDetailModal = ref(false)
 
 const onLikeClicked = async () => {
+    if (!AuthHelper.getUser()) {
+        alert("로그인이 필요합니다")
+        return
+    }
     if (isLiked.value) {
         let result = await axios.post(`${import.meta.env.VITE_API_URL}/api/likes/decrementLikes/photos/${props.photo.id}/user/${AuthHelper.getUser().id}`)
         props.photo.likeCount = result.data.likeCount

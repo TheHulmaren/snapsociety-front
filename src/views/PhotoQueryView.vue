@@ -191,6 +191,10 @@ const fetchLikeInfo = async (photos) => {
     await Promise.all(photos.map(async (photo) => {
         let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/countLikes/photos/${photo.id}`);
         photo.likeCount = result.data;
+        if(AuthHelper.getUser() === null){
+            photo.isLikedByCurrentUser = false
+            return
+        }
         result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/checkIfLiked/photos/${photo.id}/user/${AuthHelper.getUser().id}`);
         photo.isLikedByCurrentUser = result.data;
     }));

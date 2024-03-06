@@ -17,6 +17,7 @@
                 <p>높은 정확도의 AI 사진검색 기술로 원하는 사진을 빠르게 찾아보세요.</p>
             </div>
         </div>
+        <router-link to="/main/photos?query=🏆%20탑_🕗%20지난%20일주일" class="text-main text-xl animate-bounce hover:underline">😏 엿보러 가기</router-link>
         <div class="px-4 w-full border-y-0.5 border-gray-700 py-4">
             <h1 class="my-4 text-center text-main text-xl font-semibold">🎉 회원가입 🙋‍♀️</h1>
             <div class="flex flex-col gap-2 text-sm w-full sm:w-1/2 mx-auto">

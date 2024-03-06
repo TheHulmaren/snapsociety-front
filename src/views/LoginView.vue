@@ -7,7 +7,6 @@
             </h1>
         </div>
         <div class="flex flex-col w-full gap-2">
-
             <DefaultTextField v-model="id" placeholder="이메일" type="email" />
             <DefaultTextField v-model="password" type="password" placeholder="비밀번호" />
         </div>

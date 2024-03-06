@@ -6,7 +6,11 @@
                     :is-selected="selectedTabSlug === tab.slug" @click="onTabClick(tab)" />
             </ul>
         </div>
-        <RouterView :key="route.fullPath"/>
+        <RouterView v-slot="{ Component }">
+            <KeepAlive :max="10">
+                <Component :key="route.fullPath" :is="Component" />
+            </KeepAlive>
+        </RouterView>
     </div>
 </template>
 <script setup>

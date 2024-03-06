@@ -4,8 +4,8 @@
         <div class="flex items-center justify-between px-4">
             <SectionHeader :content="`👩‍💻 Post ID: ${post.id}`" />
             <div class="gap-4 flex"
-                v-if="post.authorId === AuthHelper.getUser().id || AuthHelper.getUser().roles.some((r) => r === 'Admin' || r === 'Mod')">
-                <button v-if="post.authorId === AuthHelper.getUser().id" @click="onPostEdit" class="text-xs">수정하기</button>
+                v-if="post.authorId === AuthHelper.getUser()?.id || AuthHelper.getUser()?.roles?.some((r) => r === 'Admin' || r === 'Mod')">
+                <button v-if="post.authorId === AuthHelper.getUser()?.id" @click="onPostEdit" class="text-xs">수정하기</button>
                 <button @click="onPostDelete" class="text-xs text-red-500">삭제하기</button>
             </div>
         </div>
@@ -31,8 +31,11 @@
             </div>
             <div v-else class="flex flex-col items-center" v-for="photo in photos" :key="photo.id">
                 <PhotoVCard :photo="photo" />
-                <PhotoExifPanel :exif="photo.exifTags" class="w-full sm:w-[450px]" />
-                <p>{{ photo.caption }}</p>
+                <div class="px-4 w-full">
+
+                    <PhotoExifPanel :exif="photo.exifTags" class="w-full sm:w-[450px]" />
+                </div>
+                <p class="mt-2">{{ photo.caption }}</p>
             </div>
         </ul>
         <div v-html="post.contentText" class="px-4 prose prose-slate prose-invert "></div>
@@ -59,7 +62,7 @@
                             <h3 class=" ">{{
                                 comment.user?.userName }}</h3>
                             <span class="text-gray-500">{{ TimeHelper.timeSince(new Date(comment.createdAtUtc)) }}</span>
-                            <span v-if="AuthHelper.getUser().id === comment.authorId"
+                            <span v-if="AuthHelper.getUser()?.id === comment.authorId"
                                 class="font-semibold text-main  rounded text-[11px]">me</span>
                             <span v-else-if="comment.authorId === post.authorId"
                                 class="font-semibold text-blue-500  rounded text-[11px]">op</span>
@@ -71,9 +74,9 @@
                                     답글</button>
                                 <button
                                     @click="commentEditIndex = commentEditIndex === comment.id ? undefined : comment.id; commentEditContent = comment.content; console.log(commentEditIndex)"
-                                    v-if="AuthHelper.getUser().id === comment.authorId" class=" ">수정</button>
+                                    v-if="AuthHelper.getUser()?.id === comment.authorId" class=" ">수정</button>
                                 <button @click="onCommentDelete(comment)"
-                                    v-if="AuthHelper.getUser().id === comment.authorId || (AuthHelper.getUser().roles ?? []).some(r => r === 'Admin')"
+                                    v-if="AuthHelper.getUser()?.id === comment.authorId || (AuthHelper.getUser()?.roles ?? []).some(r => r === 'Admin')"
                                     class=" text-red-500 ">삭제</button>
                             </div>
                         </div>
@@ -102,7 +105,7 @@
                                         reply.user?.userName }}</h3>
                                     <span class=" text-gray-500">{{ TimeHelper.timeSince(new Date(reply.createdAtUtc))
                                     }}</span>
-                                    <span v-if="AuthHelper.getUser().id === reply.authorId"
+                                    <span v-if="AuthHelper.getUser()?.id === reply.authorId"
                                         class="font-semibold text-main  rounded text-[11px]">me</span>
                                     <span v-else-if="reply.authorId === post.authorId"
                                         class="font-semibold text-blue-500  rounded text-[11px]">op</span>
@@ -110,9 +113,9 @@
                                     <div class="flex gap-4">
                                         <button
                                             @click="commentEditIndex = commentEditIndex === reply.id ? undefined : reply.id; commentEditContent = reply.content; console.log(commentEditIndex)"
-                                            v-if="AuthHelper.getUser().id === reply.authorId" class="">수정</button>
+                                            v-if="AuthHelper.getUser()?.id === reply.authorId" class="">수정</button>
                                         <button @click="onCommentDelete(reply)"
-                                            v-if="AuthHelper.getUser().id === reply.authorId || (AuthHelper.getUser().roles ?? []).some(r => r === 'Admin')"
+                                            v-if="AuthHelper.getUser()?.id === reply.authorId || (AuthHelper.getUser()?.roles ?? []).some(r => r === 'Admin')"
                                             class=" text-red-500">삭제</button>
                                     </div>
                                 </div>
@@ -131,17 +134,17 @@
                         </div>
                         <!-- <div class="absolute w-[1px] h-[calc(100%-24px)] bottom-0 left-[8px] bg-gray-700"></div> -->
                     </li>
-                    <li v-if="replyIndex === comment.id" class="relative flex flex-col gap-2 p-2 border-l-4 border-gray-800">
+                    <li v-if="replyIndex === comment.id && AuthHelper.getUser() !== null"
+                        class="relative flex flex-col gap-2 p-2 border-l-4 border-gray-800">
                         <div class="flex gap-2 items-start">
                             <img :src="currentUser.profilePhotoUrl ?? '/default-prof-img.webp'"
                                 class="w-4 h-4 object-cover rounded-full">
                             <div class="flex flex-col gap-2 grow">
                                 <div class="flex gap-2 items-center text-[11px]">
-                                    <h3 class="">{{ AuthHelper.getUser().username }}</h3>
+                                    <h3 class="">{{ AuthHelper.getUser()?.username }}</h3>
                                     <span class=" text-main font-semibold">New</span>
                                 </div>
                                 <DefaultTextField v-model="replyContent" :placeholder="'댓글을 남겨주세요'" class="" />
-
                             </div>
                         </div>
                         <DefaultButton @click="onReplySubmit" :type="'submit'" :content="'등록'" class="ml-auto">
@@ -149,13 +152,14 @@
                     </li>
                 </ul>
             </li>
-            <li class="relative flex flex-col gap-2 p-2 border-l-4 border-main bg-gray-700">
+            <li v-if="AuthHelper.getUser() !== null"
+                class="relative flex flex-col gap-2 p-2 border-l-4 border-main bg-gray-700">
                 <div class="flex gap-2 items-start">
                     <img :src="currentUser.profilePhotoUrl ?? '/default-prof-img.webp'"
                         class="w-4 h-4 object-cover rounded-full">
                     <div class="flex flex-col gap-2 grow">
                         <div class="flex gap-2 items-center text-[11px]">
-                            <h3 class="">{{ AuthHelper.getUser().username }}</h3>
+                            <h3 class="">{{ AuthHelper.getUser()?.username }}</h3>
                             <span class=" text-main font-semibold">New</span>
                         </div>
                         <DefaultTextField v-model="commentContent" :placeholder="'댓글을 남겨주세요'" class="" />
@@ -265,6 +269,10 @@ const onPostEdit = async () => {
 }
 
 const onLikeClicked = async () => {
+    if(AuthHelper.getUser() === null){
+        alert("🛑 로그인 후에 좋아요를 누르실 수 있어요!")
+        return
+    }
     if (post.value.isLikedByCurrentUser) {
         let result = await axios.post(`${import.meta.env.VITE_API_URL}/api/likes/decrementLikes/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
         post.value.likeCount = result.data.likeCount
@@ -426,15 +434,24 @@ onMounted(async () => {
     result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/countLikes/articles/${route.params.id}`)
     post.value.likeCount = result.data
 
-    result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/checkIfLiked/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
-    post.value.isLikedByCurrentUser = result.data
+    if (AuthHelper.getUser() === null) {
+        post.value.isLikedByCurrentUser = false
+    }
+    else {
+        result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/checkIfLiked/articles/${route.params.id}/user/${AuthHelper.getUser().id}`)
+        post.value.isLikedByCurrentUser = result.data
+    }
 
     // update view count
     result = await axios.post(`${import.meta.env.VITE_API_URL}/api/forumArticles/${route.params.id}/view`)
     viewCount.value = result.data.count
 
-    // fetch current user
-    currentUser.value = (await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${AuthHelper.getUser().id}`)).data
+    if (AuthHelper.getUser() === null) {
+        currentUser.value = null
+    } else {
+        // fetch current user
+        currentUser.value = (await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${AuthHelper.getUser().id}`)).data
+    }
 
 
     isLoading.value = false

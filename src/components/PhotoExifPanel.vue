@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col py-2 px-4 gap-2 bg-gray-950 border-gray-700 border-0.5 text-xs rounded-md">
+    <div class="flex flex-col py-2 px-4 gap-2 bg-gray-950 border-gray-700 border-0.5 text-xs rounded">
         <ul class="flex gap-2 text-nowrap flex-wrap justify-between">
             <li>{{ props.exif.exifCameraModelRawString ?? 'N/A Camera' }}</li>
             <li>{{ props.exif.exifLensModelRawString ?? 'N/A Lens' }}</li>

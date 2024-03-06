@@ -7,69 +7,80 @@ export class AuthHelper {
 
   constructor() {}
 
-  static async checkIfAuthed() {
-    const refreshToken = localStorage.getItem("refreshToken");
+  static checkIfExpired() {
     const accessToken = localStorage.getItem("accessToken");
 
-    // Check if Access Token exists first.
     if (accessToken == null || accessToken == "undefined") {
-      console.log("No Access Token");
-      this.clearTokens();
-      return false;
+      return true;
     }
 
     var decodedPayload;
     try {
       decodedPayload = this.parseJwt(accessToken);
     } catch (e) {
-      console.log("Cannot decode Access Token");
-      this.clearTokens();
-      return false;
+      return true;
     }
 
     const expiry = new Date(decodedPayload.exp * 1000);
 
-    // If Access Token is expired, request new one.
-    if (expiry < new Date()) {
-      const refreshed = await this.getRefreshedToken();
+    return expiry < new Date();
+  }
 
-      if (refreshed == null) {
-        console.log("Failed to refresh Access Token");
-        this.clearTokens();
-        return false;
-      }
-      this.setAccessToken(refreshed);
+  static async checkIfAuthed() {
+    // Check if Access Token is expired.
+    let expired = this.checkIfExpired();
+
+    // If Access Token is expired or not found, request new one.
+    if (expired) {
+      return await this.refreshToken();
     }
+
+    return true;
+  }
+
+  static async refreshToken() {
+    const refreshed = await this.getRefreshedToken();
+
+    if (refreshed == null) {
+      console.log("Failed to refresh Access Token");
+      this.clearTokens();
+      return false;
+    }
+    this.setAccessToken(refreshed);
     return true;
   }
 
   static async checkIfBanned(id: string) {
-    try{
-      let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${id}/ban`);
+    try {
+      let result = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/users/${id}/ban`
+      );
       let unbanDate = new Date(result.data.unbannedAtUtc);
-      if(unbanDate > new Date()){
+      if (unbanDate > new Date()) {
         return {
           isBanned: true,
           banDate: new Date(result.data.bannedAtUtc),
           unbanDate: unbanDate,
           reason: result.data.reason,
-          days: result.data.days
+          days: result.data.days,
         };
       }
-    }catch(e){
-    }
+    } catch (e) {}
     return {
-      isBanned: false
+      isBanned: false,
     };
   }
 
   static async signIn(email: string, password: string) {
     var response;
     try {
-      response = await this.authAxios.post(import.meta.env.VITE_API_URL + "/api/auth/signIn", {
-        email,
-        password,
-      });
+      response = await this.authAxios.post(
+        import.meta.env.VITE_API_URL + "/api/auth/signIn",
+        {
+          email,
+          password,
+        }
+      );
     } catch (e) {
       console.log(e);
       return null;
@@ -95,10 +106,13 @@ export class AuthHelper {
     }
 
     try {
-      var response = await this.authAxios.post(import.meta.env.VITE_API_URL + "/api/auth/refreshToken", {
-        refreshToken,
-        accessToken,
-      });
+      var response = await this.authAxios.post(
+        import.meta.env.VITE_API_URL + "/api/auth/refreshToken",
+        {
+          refreshToken,
+          accessToken,
+        }
+      );
 
       return response.data.data;
     } catch (e) {
@@ -108,7 +122,7 @@ export class AuthHelper {
 
   static parseJwt = (token: string) => {
     let binString = atob(token.split(".")[1]);
-    let bytes = Uint8Array.from(binString, (m) => m.codePointAt(0))
+    let bytes = Uint8Array.from(binString, (m) => m.codePointAt(0));
     return JSON.parse(new TextDecoder().decode(bytes));
   };
 
@@ -127,9 +141,10 @@ export class AuthHelper {
       return null;
     }
 
-    let rolesDecoded = decodedPayload[
-      "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-    ];
+    let rolesDecoded =
+      decodedPayload[
+        "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+      ];
 
     var result: {
       id: string;
@@ -140,15 +155,15 @@ export class AuthHelper {
       id: decodedPayload[
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
       ],
-      email: decodedPayload[
-        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-      ],
+      email:
+        decodedPayload[
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+        ],
       username:
         decodedPayload[
           "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
         ],
-      roles:
-        Array.isArray(rolesDecoded) ? rolesDecoded : [rolesDecoded]
+      roles: Array.isArray(rolesDecoded) ? rolesDecoded : [rolesDecoded],
     };
 
     return result;

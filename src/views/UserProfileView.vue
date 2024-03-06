@@ -15,7 +15,7 @@
             <span v-else-if="user.bio === ''" class="text-xs text-slate-500">아직 프로필 메세지를 설정하지 않았어요</span>
             <p v-else>{{ user.bio }}</p>
             <DefaultButton v-if="showBioEdit" @click="onBioSaved" type="submit" content="저장하기"></DefaultButton>
-            <DefaultButton v-else-if="AuthHelper.getUser().id === user.id" @click="showBioEdit = true" type="primary"
+            <DefaultButton v-else-if="AuthHelper.getUser()?.id === user.id" @click="showBioEdit = true" type="primary"
                 content="프로필 메세지 수정"></DefaultButton>
         </div>
         <ModalWrapperView v-if="showModal" @on-close="showModal = false">
@@ -24,10 +24,14 @@
         <div class="flex flex-col px-4">
             <ul class="flex gap-2 flex-wrap">
                 <DefaultButton class="grow" v-for="tab in tabs" :key="tab.slug" :content="tab.name"
-                    :is-selected="selectedTabSlug === tab.slug" @click="router.push(`/user/${user.id}/${tab.slug}`); selectedTabSlug = tab.slug" />
+                    :is-selected="selectedTabSlug === tab.slug" @click="router.push(`/user/${user.id}/${tab.slug}`)" />
             </ul>
         </div>
-        <RouterView class="" :key="route.fullPath" />
+        <RouterView v-slot="{ Component }">
+            <KeepAlive :max="5">
+                <component :is="Component"/>
+            </KeepAlive>
+        </RouterView>
     </div>
 </template>
 <script setup>
@@ -72,7 +76,7 @@ const tabs = [
 ]
 
 const onBannerClicked = () => {
-    if (AuthHelper.getUser().id !== user.value.id) return
+    if (AuthHelper.getUser()?.id !== user.value.id) return
     if(!confirm("📷 배너 사진을 변경하시겠습니까?")) return
     showModal.value = true
 }
@@ -101,7 +105,7 @@ const onBioSaved = async () => {
 }
 
 const onProfileImgClicked = () => {
-    if (AuthHelper.getUser().id !== user.value.id) return
+    if (AuthHelper.getUser()?.id !== user.value.id) return
     if (!confirm("📷 프로필 사진을 변경하시겠습니까?")) return
     imgInput.click()
 }
@@ -115,6 +119,8 @@ const onProfilePhotoSubmit = async () => {
 }
 
 onMounted(async () => {
+    selectedTabSlug.value = route.fullPath.split("/")[3]
+
     imgInput = document.getElementById("imageInput")
     let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${route.params.id}`)
     user.value = result.data

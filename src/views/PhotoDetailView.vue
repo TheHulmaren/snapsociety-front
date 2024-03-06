@@ -1,52 +1,57 @@
 <template>
-    <Skeleton v-if="isLoading" />
-    <div v-else class="flex flex-col p-4 gap-6">
-        <img :src="photo.largeUrl" class=" max-h-[450px] object-contain bg-gray-800 rounded overflow-y-auto cursor-pointer"
-            @click="enlarged = !enlarged">
-        <div class="flex justify-between items-center">
-            <SectionHeader content="✍️ 제목과 설명" />
-            <div v-if="photo.uploaderId === AuthHelper.getUser().id
-                || AuthHelper.getUser().roles.includes('Admin')
-                || AuthHelper.getUser().roles.includes('Mod')" class="flex gap-4 text-xs text-gray-500">
-                <button @click="showEdit = !showEdit">수정</button>
-                <button @click="onDelete" class="text-red-500">삭제</button>
+    <div>
+        <Skeleton v-if="isLoading" />
+        <div v-else class="flex flex-col p-4 gap-6">
+            <img :src="photo.largeUrl"
+                class=" max-h-[450px] object-contain bg-gray-800 rounded overflow-y-auto cursor-pointer"
+                @click="enlarged = !enlarged">
+            <div class="flex justify-between items-center">
+                <SectionHeader content="✍️ 제목과 설명" />
+                <div v-if="photo.uploaderId === AuthHelper.getUser()?.id
+                    || AuthHelper.getUser()?.roles?.includes('Admin')
+                    || AuthHelper.getUser()?.roles?.includes('Mod')" class="flex gap-4 text-xs text-gray-500">
+                    <button @click="showEdit = !showEdit">수정</button>
+                    <button @click="onDelete" class="text-red-500">삭제</button>
+                </div>
             </div>
-        </div>
-        <div v-if="showEdit" class="flex flex-col items-end gap-2">
-            <DefaultTextField v-model="titleEdit" :type="input" :placeholder="'제목'" />
-            <DefaultTextField v-model="descEdit" :type="textarea" :placeholder="'설명'" />
-            <button @click="onEdit" class="text-main">저장</button>
-        </div>
-        <div v-else class="flex flex-col gap-2">
-            <h2 class=" text-xl">{{ photo.title }}</h2>
-            <h3>{{ photo.desc }}</h3>
-        </div>
-        <SectionHeader content="👨‍💻 업로더" />
-        <div @click="router.push('/user/' + photo.user.id)" class="flex gap-2 items-center cursor-pointer">
-            <img :src="photo.user?.profilePhotoUrl ?? '/default-prof-img.webp'" class="w-10 h-10 rounded-full object-cover">
-            <div class="flex flex-col justify-between">
-                <h3>{{ photo.user?.userName ?? '' }}</h3>
-                <span class="text-xs">{{ TimeHelper.timeSince(new Date(photo.createdAtUtc)) }}</span>
+            <div v-if="showEdit" class="flex flex-col items-end gap-2">
+                <DefaultTextField v-model="titleEdit" :type="input" :placeholder="'제목'" />
+                <DefaultTextField v-model="descEdit" :type="textarea" :placeholder="'설명'" />
+                <button @click="onEdit" class="text-main">저장</button>
             </div>
+            <div v-else class="flex flex-col gap-2">
+                <h2 class=" text-xl">{{ photo.title }}</h2>
+                <h3>{{ photo.desc }}</h3>
+            </div>
+            <SectionHeader content="👨‍💻 업로더" />
+            <div @click="router.push('/user/' + photo.user.id)" class="flex gap-2 items-center cursor-pointer">
+                <img :src="photo.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
+                    class="w-10 h-10 rounded-full object-cover">
+                <div class="flex flex-col justify-between">
+                    <h3>{{ photo.user?.userName ?? '' }}</h3>
+                    <span class="text-xs">{{ TimeHelper.timeSince(new Date(photo.createdAtUtc)) }}</span>
+                </div>
+            </div>
+            <SectionHeader content="💽 사진 정보" />
+            <PhotoExifPanel v-if="photo.exifTags" :exif="photo.exifTags" class="max-w-[450px]" />
+            <SectionHeader content="📝 이 사진이 포함된 게시글" />
+            <PostVList :posts="relatedPosts" />
+            <SectionHeader content="📷 비슷한 사진들" />
+            <ul class="flex overflow-x-scroll gap-2">
+                <li class=" shrink-0 " v-for="photo in relatedPhotos" :key="photo.id">
+                    <img @click="router.push({ name: 'photo-detail', params: { id: photo.id } }); isLoading = true"
+                        :src="photo.thumbnailUrl"
+                        class="w-20 h-20 rounded object-cover cursor-pointer border-0.5 border-gray-700">
+                </li>
+            </ul>
         </div>
-        <SectionHeader content="💽 사진 정보" />
-        <PhotoExifPanel v-if="photo.exifTags" :exif="photo.exifTags" class="max-w-[450px]" />
-        <SectionHeader content="📝 이 사진이 포함된 게시글" />
-        <PostVList :posts="relatedPosts" />
-        <SectionHeader content="📷 비슷한 사진들" />
-        <ul class="flex overflow-x-scroll gap-2">
-            <li class=" shrink-0 " v-for="photo in relatedPhotos" :key="photo.id">
-                <img @click="router.push({ name: 'photo-detail', params: { id: photo.id } }); isLoading = true" :src="photo.thumbnailUrl"
-                    class="w-20 h-20 rounded object-cover cursor-pointer border-0.5 border-gray-700">
-            </li>
-        </ul>
-    </div>
-    <div v-if="enlarged" @click="enlarged = false" class="fixed w-screen h-screen top-0 left-0 z-30 cursor-pointer">
-        <div class="w-full h-full absolute bg-black opacity-80">
+        <div v-if="enlarged" @click="enlarged = false" class="fixed w-screen h-screen top-0 left-0 z-30 cursor-pointer">
+            <div class="w-full h-full absolute bg-black opacity-80">
+            </div>
+            <PhotoExifPanel v-if="photo.exifTags" :exif="photo.exifTags"
+                class="absolute left-1/2 -translate-x-[50%] bottom-0 w-4/5 sm:max-w-[450px] z-50 mb-8" />
+            <img :src="photo.largeUrl" class="w-full h-full object-contain relative z-40" @click="enlarged = !enlarged">
         </div>
-        <PhotoExifPanel v-if="photo.exifTags" :exif="photo.exifTags"
-            class="absolute left-1/2 -translate-x-[50%] bottom-0 w-4/5 sm:max-w-[450px] z-50 mb-8" />
-        <img :src="photo.largeUrl" class="w-full h-full object-contain relative z-40" @click="enlarged = !enlarged">
     </div>
 </template>
 <script setup>
