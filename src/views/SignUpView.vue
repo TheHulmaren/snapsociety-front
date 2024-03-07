@@ -47,19 +47,20 @@
 
         </div>
         <!-- sign up form -->
-        <div class="px-4 w-full border-y-0.5 border-gray-700 py-4">
-            <h1 class="my-4 text-center text-main text-xl font-semibold">🎉 회원가입 🙋‍♀️</h1>
-            <div class="flex flex-col gap-2 text-sm w-full sm:w-1/2 mx-auto">
-                <label for="email" class="text-slate-500 ">이메일</label>
-                <input v-model="signUpForm.email" name="email" type="text" placeholder="이메일"
-                    class="py-2 px-4 rounded bg-gray-950 border-0.5 border-gray-700 font-normal">
-                <label for="password" class="text-slate-500 ">비밀번호</label>
-                <input v-model="signUpForm.password" type="password" placeholder="비밀번호"
-                    class="py-2 px-4 rounded bg-gray-950 border-0.5 border-gray-700 font-normal">
-                <input v-model="signUpForm.passwordConfirm" type="password" placeholder="비밀번호 확인"
-                    class="py-2 px-4 rounded bg-gray-950 border-0.5 border-gray-700 font-normal">
-                <span class="text-xs text-slate-500">* 6자 이상, 영문, 숫자를 포함해야 합니다.</span>
-                <DefaultButton @click="onSignUp" class="self-end" type="submit" content="가입하기" />
+        <div class="px-4 w-full border-y-0.5 bg-gray-900 border-gray-700 py-4 sticky bottom-0 z-50">
+            <div class="flex gap-2 text-sm w-full mx-auto">
+                <div class="grow" :class="showPasswordInput ? 'hidden' : ''">
+                    <input v-model="signUpForm.email" name="email" type="text" placeholder="이메일"
+                        class="py-2 px-4 rounded bg-gray-950 border-0.5 border-gray-700 font-normal w-full">
+                </div>
+                <div :class="showPasswordInput ? '' : 'hidden'" class="flex gap-2 grow">
+                    <input v-model="signUpForm.password" type="password" placeholder="비밀번호"
+                        class="py-2 px-4 rounded bg-gray-950 border-0.5 border-gray-700 font-normal w-full">
+                    <input v-model="signUpForm.passwordConfirm" type="password" placeholder="비밀번호 확인"
+                        class="py-2 px-4 rounded bg-gray-950 border-0.5 border-gray-700 font-normal w-full">
+                </div>
+                <DefaultButton v-if="!showPasswordInput" @click="showPasswordInput = true" class="" type="submit" content="가입하기" />
+                <DefaultButton v-if="showPasswordInput" @click="onSignUp" class="" type="submit" content="가입하기" />
             </div>
         </div>
     </div>
@@ -80,6 +81,7 @@ const signUpForm = ref({
     passwordConfirm: ""
 })
 const topPhotos = ref([])
+const showPasswordInput = ref(false)
 
 var msnry = null;
 const passwordRegex = /^[A-Za-z\d!@#$%^&*()]{6,}$/
@@ -166,5 +168,6 @@ onMounted(async () => {
 }
 
 .wave-clip {
-    clip-path: polygon(100% 100%, 0% 100% , 0.00% 83.71%, 3.33% 76.12%, 6.67% 67.19%, 10.00% 57.81%, 13.33% 48.88%, 16.67% 41.29%, 20.00% 35.77%, 23.33% 32.87%, 26.67% 32.87%, 30.00% 35.77%, 33.33% 41.29%, 36.67% 48.88%, 40.00% 57.81%, 43.33% 67.19%, 46.67% 76.12%, 50.00% 83.71%, 53.33% 89.23%, 56.67% 92.13%, 60.00% 92.13%, 63.33% 89.23%, 66.67% 83.71%, 70.00% 76.12%, 73.33% 67.19%, 76.67% 57.81%, 80.00% 48.88%, 83.33% 41.29%, 86.67% 35.77%, 90.00% 32.87%, 93.33% 32.87%, 96.67% 35.77%, 100.00% 41.29%);}
+    clip-path: polygon(100% 100%, 0% 100%, 0.00% 83.71%, 3.33% 76.12%, 6.67% 67.19%, 10.00% 57.81%, 13.33% 48.88%, 16.67% 41.29%, 20.00% 35.77%, 23.33% 32.87%, 26.67% 32.87%, 30.00% 35.77%, 33.33% 41.29%, 36.67% 48.88%, 40.00% 57.81%, 43.33% 67.19%, 46.67% 76.12%, 50.00% 83.71%, 53.33% 89.23%, 56.67% 92.13%, 60.00% 92.13%, 63.33% 89.23%, 66.67% 83.71%, 70.00% 76.12%, 73.33% 67.19%, 76.67% 57.81%, 80.00% 48.88%, 83.33% 41.29%, 86.67% 35.77%, 90.00% 32.87%, 93.33% 32.87%, 96.67% 35.77%, 100.00% 41.29%);
+}
 </style>
