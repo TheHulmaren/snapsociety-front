@@ -30,7 +30,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-// define views that should be refreshed when the route changes
+// define views that should be refreshed when the id changes
 const refreshedById = ['photo-detail', 'post-detail', 'user-profile', 'user-photos', 'user-posts', 'user-liked-photos', 'user-liked-posts']
 
 const routerViewKey = () => {
