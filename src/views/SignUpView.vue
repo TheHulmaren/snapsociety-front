@@ -4,7 +4,7 @@
         <div class=" absolute top-0 left-0 w-full">
             <div class="absolute top-0 left-0 w-full h-[500px] bg-gray-900 bg-opacity-70"></div>
             <div class="absolute bottom-0 left-0 w-full h-[70px] bg-gray-900 wave-clip"></div>
-            <video id="bgVideo" autoplay muted loop class="w-full h-[500px] object-cover">
+            <video id="bgVideo" autoplay muted loop playsinline class="w-full h-[500px] object-cover">
                 <source src="/intro-bgvideo.mov" type="video/mp4">
             </video>
         </div>
