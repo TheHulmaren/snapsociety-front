@@ -7,9 +7,10 @@
             <br>
             최대 동시 업로드 가능 이미지 수: <b>{{ imageFiles.length }}/10 pics</b>
             <br>
-            업로드 가능 이미지 수: <b><span :class="remainingQuota > 0 ? 'text-green-500' : 'text-red-500'">{{ 10 - remainingQuota }}</span>/10 pics</b>
+            업로드 가능 이미지 수: <b><span :class="(!AuthHelper.getUser().roles.includes('User') || remainingQuota) > 0 ? 'text-green-500' : 'text-red-500'">{{ 10 - remainingQuota }}</span>/10 pics</b>
             <br>
-            <span v-if="remainingQuota <= 0" class="text-red-500">이미지 업로드 한도에 이르셨습니다! 업로드는 일주일에 최대 10장까지만 가능합니다.</span>
+            <span v-if="!AuthHelper.getUser().roles.includes('User')" class="text-blue-400">관리자는 업로드 제한이 없습니다.</span>
+            <span v-else-if="remainingQuota <= 0" class="text-red-500">이미지 업로드 한도에 이르셨습니다! 업로드는 일주일에 최대 10장까지만 가능합니다.</span>
             <span v-else class="text-green-500">업로드는 일주일에 최대 10장까지 가능합니다.</span>
         </p>
         <ul v-if="imageFiles.length > 0" class="flex flex-col gap-4">
@@ -25,7 +26,6 @@
                 </form>
             </li>
         </ul>
-
         <form @submit.prevent="" class="flex flex-col">
             <input @change="onImageSubmit" id="imageInput" type="file" name="file" multiple style="display:none;"
                 accept="image/jpg, image/jpeg, image/png, image/webp, image/tiff" />
@@ -105,7 +105,7 @@ const deleteImage = async (file) => {
 }
 
 const onUploadClick = async () => {
-    if(remainingQuota.value - imageFiles.value.length <= 0){
+    if(AuthHelper.getUser().roles.includes('User') && remainingQuota.value - imageFiles.value.length <= 0){
         alert("📁🛜 이미지 업로드 한도에 이르셨습니다! 업로드는 일주일에 최대 10장까지만 가능합니다.")
         return
     }
