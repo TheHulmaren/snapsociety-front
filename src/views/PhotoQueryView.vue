@@ -17,7 +17,8 @@
                 <span class="font-sm">There are no posts, yet.</span>
             </div>
         </div>
-        <div class="flex flex-col items-center text-base" v-if="reachedEnd">
+        <Skeleton v-if="isLoadingMore" />
+        <div class="flex flex-col items-center text-base" v-else-if="reachedEnd">
             <span class=" font-semibold">✋ You've reached an end of the list<br></span>
             <span class=" text-sm">That was quite an effort, nice!</span>
         </div>
@@ -47,6 +48,7 @@ const masonryListRef = ref()
 const isUnsupportedQuery = ref(false)
 const reachedEnd = ref(false)
 const isLoading = ref(false)
+const isLoadingMore = ref(false)
 const isEmpty = ref(false)
 
 var pageIndex = 0
@@ -228,7 +230,8 @@ onMounted(async () => {
         let listBottom = clientRect.bottom + top
         var screenBottom = top + window.innerHeight
 
-        if (listBottom <= screenBottom + 50 && !reachedEnd.value && !isLoading.value) {
+        if (listBottom <= screenBottom + 50 && !reachedEnd.value && !isLoading.value && isLoadingMore.value === false) {
+            isLoadingMore.value = true
             pageIndex++
             let result = await queryTable[currentQuery]();
             result = await fetchUserData(result);
@@ -245,7 +248,7 @@ onMounted(async () => {
             else {
                 photos.value.push(...result)
             }
-            console.log(photos.value)
+            isLoadingMore.value = false
         }
     })
 })
