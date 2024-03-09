@@ -29,13 +29,12 @@
                 <h3 class="text-xl font-semibold">❌ No photos</h3>
                 <p class="text-sm">This post has no photos.</p>
             </div>
-            <div v-else class="flex flex-col items-center" v-for="photo in photos" :key="photo.id">
+            <div v-else class="flex flex-col items-start" v-for="photo in photos" :key="photo.id">
                 <PhotoVCard :photo="photo" />
                 <div class="px-4 w-full">
-
                     <PhotoExifPanel :exif="photo.exifTags" class="w-full sm:w-[450px]" />
                 </div>
-                <p class="mt-2">{{ photo.caption }}</p>
+                <p class="px-4 py-2 text-sm">{{ photo.caption }}</p>
             </div>
         </ul>
         <div v-html="post.contentText" class="px-4 prose prose-slate prose-invert "></div>
