@@ -71,6 +71,10 @@ const onImageClicked = async () => {
         router.push(`/photos/${props.photo.id}`)
         return
     }
+    if(!AuthHelper.getUser()) {
+        alert("로그인이 필요합니다")
+        return
+    }
     showLikeOverlay.value = true
     inLikeProcess.value = true
     await onLikeClicked()
