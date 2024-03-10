@@ -57,7 +57,8 @@
                     <input v-model="signUpForm.passwordConfirm" type="password" placeholder="비밀번호 확인"
                         class="py-2 px-4 rounded bg-gray-950 border-0.5 border-gray-700 font-normal w-full">
                 </div>
-                <DefaultButton v-if="!showPasswordInput" @click="showPasswordInput = true" class="" type="submit" content="가입하기" />
+                <DefaultButton v-if="!showPasswordInput" @click="showPasswordInput = true" class="" type="submit"
+                    content="가입하기" />
                 <DefaultButton v-if="showPasswordInput" @click="onSignUp" class="" type="submit" content="가입하기" />
             </div>
         </div>
@@ -70,6 +71,7 @@ import DefaultButton from '@/components/DefaultButton.vue';
 import { ref } from 'vue'
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { AuthHelper } from '@/helpers/AuthHelper';
 
 const router = useRouter()
 
@@ -127,6 +129,17 @@ const onSignUp = async () => {
     try {
         await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/signUp`, signUpForm.value)
         alert("✅ 회원가입에 성공했습니다.")
+        var result = await AuthHelper.signIn(id.value, password.value);
+        if (result) {
+            console.log(result)
+            console.log("Login success")
+            AuthHelper.clearTokens()
+            AuthHelper.setAccessToken(result.accessToken)
+            AuthHelper.setRefreshToken(result.refreshToken)
+            router.push('/')
+            return;
+        }
+        alert("❌ 에러 발생")
     } catch (e) {
         alert("❌ 회원가입에 실패했습니다.\n아이디 또는 이메일이 다른 계정과 중복되지 않는지 확인해주세요!")
     }
@@ -177,6 +190,4 @@ onMounted(async () => {
     transition: transform 0.2s;
     transform: scale(0.95);
 }
-
-
 </style>
