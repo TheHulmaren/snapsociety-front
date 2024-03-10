@@ -2,10 +2,9 @@
     <Skeleton v-if="isLoading" />
     <div v-else class="gap-4 flex flex-col">
         <div @click="onBannerClicked" class="w-full aspect-[21/9] cursor-pointer overflow-hidden">
-            <img :src="user.bannerPhoto?.largeUrl ?? '/prof-back.jpg'" alt="배너 사진" class="w-full h-full object-cover object-center">
+            <img :src="user.bannerPhoto?.largeUrl ?? '/prof-back.jpg'" alt="배너 사진"
+                class="w-full h-full object-cover object-center">
         </div>
-        <input @change="onProfilePhotoSubmit" id="imageInput" type="file" name="file" style="display:none;"
-            accept="image/jpg, image/jpeg, image/png, image/webp, image/tiff" />
         <div class="main-section my-4 px-4 flex flex-col items-center -mt-16 md:-mt-20 gap-4">
             <img @click="onProfileImgClicked" :src="user.profilePhotoUrl ?? '/default-prof-img.webp'" alt="프로필 사진"
                 class="w-24 md:w-32 aspect-square rounded-full object-cover hover:cursor-pointer relative z-10 border-gray-900 border-4 cursor-pointer">
@@ -29,10 +28,12 @@
         </div>
         <RouterView v-slot="{ Component }">
             <KeepAlive :max="5">
-                <component :is="Component"/>
+                <component :is="Component" />
             </KeepAlive>
         </RouterView>
     </div>
+    <input @change="onProfilePhotoSubmit" id="profImageInput" type="file" name="file" style="display:none;"
+        accept="image/jpg, image/jpeg, image/png, image/webp, image/tiff" />
 </template>
 <script setup>
 import DefaultButton from '@/components/DefaultButton.vue';
@@ -77,12 +78,12 @@ const tabs = [
 
 const onBannerClicked = () => {
     if (AuthHelper.getUser()?.id !== user.value.id) return
-    if(!confirm("📷 배너 사진을 변경하시겠습니까?")) return
+    if (!confirm("📷 배너 사진을 변경하시겠습니까?")) return
     showModal.value = true
 }
 
 const onBannerSelected = async (selected) => {
-    if(selected.length === 0) return
+    if (selected.length === 0) return
     let result = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${route.params.id}`, {
         userName: user.value.userName,
         bio: user.value.bio,
@@ -120,8 +121,9 @@ const onProfilePhotoSubmit = async () => {
 
 onMounted(async () => {
     selectedTabSlug.value = route.fullPath.split("/")[3]
+    imgInput = document.getElementById("profImageInput")
 
-    imgInput = document.getElementById("imageInput")
+    console.log(imgInput)
     let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${route.params.id}`)
     user.value = result.data
 
