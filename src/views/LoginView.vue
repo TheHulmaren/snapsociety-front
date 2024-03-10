@@ -7,8 +7,9 @@
             </h1>
         </div>
         <div class="flex flex-col w-full gap-2">
-            <DefaultTextField v-model="id" placeholder="이메일" type="email" />
-            <DefaultTextField v-model="password" type="password" placeholder="비밀번호" />
+            <input v-model="id" type="email" placeholder="이메일" class="py-2 px-4 rounded border-0.5 border-gray-700 bg-gray-950 text-sm" />
+            <input v-model="password" type="password" placeholder="비밀번호"
+                class="py-2 px-4 rounded border-0.5 border-gray-700 bg-gray-950 text-sm" />
         </div>
         <span class="text-xs text-slate-500 text-center">이메일 혹은 비밀번호를 잊으셨나요?<br><a href="mailto:snapsociety531@gmail.com"
                 class="underline">snapsociety531@gmail.com</a> 으로 문의해 주세요<br>
