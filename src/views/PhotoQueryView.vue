@@ -8,16 +8,15 @@
             <span class="font-semibold text-2xl text-main">🙏 Sorry..</span>
             <span class="font-sm">That query is not supported, yet.</span>
         </div>
-        <Skeleton v-else-if="isLoading" />
         <PhotoVList v-else-if="!isEmpty && layout === 'vertical'" :photos="photos" />
         <PhotoMasonryList ref="masonryListRef" v-else-if="!isEmpty && layout === 'masonry'" :columns="3" />
-        <div v-else>
+        <div v-else-if="!isLoading">
             <div class="flex flex-col items-center my-10 gap-2">
                 <span class="font-semibold text-2xl text-main">😱 Wow, emptiness!</span>
                 <span class="font-sm">There are no posts, yet.</span>
             </div>
         </div>
-        <Skeleton v-if="isLoadingMore" />
+        <Skeleton v-if="isLoading" />
         <div class="flex flex-col items-center text-base" v-else-if="reachedEnd">
             <span class=" font-semibold">✋ You've reached an end of the list<br></span>
             <span class=" text-sm">That was quite an effort, nice!</span>
@@ -48,7 +47,6 @@ const masonryListRef = ref()
 const isUnsupportedQuery = ref(false)
 const reachedEnd = ref(false)
 const isLoading = ref(false)
-const isLoadingMore = ref(false)
 const isEmpty = ref(false)
 
 var pageIndex = 0
@@ -193,7 +191,7 @@ const fetchLikeInfo = async (photos) => {
     await Promise.all(photos.map(async (photo) => {
         let result = await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/countLikes/photos/${photo.id}`);
         photo.likeCount = result.data;
-        if(AuthHelper.getUser() === null){
+        if (AuthHelper.getUser() === null) {
             photo.isLikedByCurrentUser = false
             return
         }
@@ -230,8 +228,8 @@ onMounted(async () => {
         let listBottom = clientRect.bottom + top
         var screenBottom = top + window.innerHeight
 
-        if (listBottom <= screenBottom + 50 && !reachedEnd.value && !isLoading.value && isLoadingMore.value === false) {
-            isLoadingMore.value = true
+        if (listBottom <= screenBottom + 50 && !reachedEnd.value && !isLoading.value && isLoading.value === false) {
+            isLoading.value = true
             pageIndex++
             let result = await queryTable[currentQuery]();
             result = await fetchUserData(result);
@@ -248,7 +246,7 @@ onMounted(async () => {
             else {
                 photos.value.push(...result)
             }
-            isLoadingMore.value = false
+            isLoading.value = false
         }
     })
 })

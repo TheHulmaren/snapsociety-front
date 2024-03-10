@@ -6,14 +6,14 @@
             <span class="font-semibold text-2xl text-main">🙏 Sorry..</span>
             <span class="font-sm">That query is not supported, yet.</span>
         </div>
-        <Skeleton v-if="isLoading" />
         <PostVList v-else-if="posts.length > 0" :posts="posts" />
-        <div v-else>
+        <div v-else-if="!isLoading">
             <div class="flex flex-col items-center my-10 gap-2">
                 <span class="font-semibold text-2xl text-main">😱 Wow, emptiness!</span>
                 <span class="font-sm">There are no posts, yet.</span>
             </div>
         </div>
+        <Skeleton v-if="isLoading" />
         <div class="flex flex-col items-center text-base" v-if="reachedEnd">
             <span class=" font-semibold">✋ You've reached an end of the list<br></span>
             <span class=" text-sm">That was quite an effort, nice!</span>
@@ -301,16 +301,19 @@ onMounted(async () => {
         var screenBottom = top + window.innerHeight
 
         if (listBottom <= screenBottom + 50 && !reachedEnd.value && !isLoading.value) {
+            isLoading.value = true
             pageIndex++
             let result = await queryTable[currentQuery]();
             result = await fetchUserData(result);
             result = await fetchLikeInfo(result);
             if (result.length === 0) {
                 reachedEnd.value = true
+                isLoading.value = false
                 return
             }
             result = await fetchUserData(result);
             posts.value.push(...result)
+            isLoading.value = false
         }
     })
 })
