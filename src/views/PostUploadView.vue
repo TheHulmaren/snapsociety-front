@@ -116,20 +116,20 @@ const dragOptions = {
 
 const articleTypes = [
     {
-        name: "📸 사진",
+        name: "🌄 사진과 글",
         slug: "photo",
         permissions: ["User", "Admin", "Mod"]
     },
-    {
-        name: "📝 잡담",
-        slug: "casual",
-        permissions: ["User", "Admin", "Mod"]
-    },
-    {
-        name: "🙋 질문",
-        slug: "ask",
-        permissions: ["User", "Admin", "Mod"]
-    },
+    // {
+    //     name: "📝 잡담",
+    //     slug: "casual",
+    //     permissions: ["User", "Admin", "Mod"]
+    // },
+    // {
+    //     name: "🙋 질문",
+    //     slug: "ask",
+    //     permissions: ["User", "Admin", "Mod"]
+    // },
     {
         name: "➡️👨‍💻 개발자에게",
         slug: "to-dev",

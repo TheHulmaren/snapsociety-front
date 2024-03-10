@@ -42,7 +42,7 @@ const onTabClick = (tab) => {
 
 const tabs = [
     {
-        name: "🚀 사진 모아보기",
+        name: "🚀 익스플로러",
         slug: "photos",
         query: "🏆%20탑_🕗%20지난%20일주일",
         buttonType: "primary"
@@ -53,45 +53,45 @@ const tabs = [
         query: "🕗%20게시일_👇%20최신%20순",
         buttonType: "primary"
     },
-    {
-        name: "💁‍♂️ 글 모아보기",
-        slug: "all",
-        query: "🕗%20게시일_👇%20최신%20순",
-        buttonType: "primary"
-    },
-    {
-        name: "💡 정보글 & 팁",
-        slug: "tips",
-        buttonType: "disabled"
-    },
-    {
-        name: "🙋 질문 & 답변",
-        slug: "ask",
-        query: "🕗%20게시일_👇%20최신%20순",
-        buttonType: "primary"
-    },
+    // {
+    //     name: "💁‍♂️ 글 모아보기",
+    //     slug: "all",
+    //     query: "🕗%20게시일_👇%20최신%20순",
+    //     buttonType: "primary"
+    // },
+    // {
+    //     name: "💡 정보글 & 팁",
+    //     slug: "tips",
+    //     buttonType: "disabled"
+    // },
+    // {
+    //     name: "🙋 질문 & 답변",
+    //     slug: "ask",
+    //     query: "🕗%20게시일_👇%20최신%20순",
+    //     buttonType: "primary"
+    // },
     {
         name: "🏆 컨테스트",
         slug: "contest",
         buttonType: "disabled"
     },
-    {
-        name: "😄 잡담",
-        slug: "casual",
-        query: "🕗%20게시일_👇%20최신%20순",
-        buttonType: "primary"
-    },
-    {
-        name: "🙋‍♂️ 토론 & 투표",
-        slug: "agora",
-        buttonType: "disabled"
-    },
-    {
-        name: "📷💰 박스추 & 장비 자랑",
-        slug: "gear",
-        query: "🕗%20게시일_👇%20최신%20순",
-        buttonType: "primary"
-    },
+    // {
+    //     name: "😄 잡담",
+    //     slug: "casual",
+    //     query: "🕗%20게시일_👇%20최신%20순",
+    //     buttonType: "primary"
+    // },
+    // {
+    //     name: "🙋‍♂️ 토론 & 투표",
+    //     slug: "agora",
+    //     buttonType: "disabled"
+    // },
+    // {
+    //     name: "📷💰 박스추 & 장비 자랑",
+    //     slug: "gear",
+    //     query: "🕗%20게시일_👇%20최신%20순",
+    //     buttonType: "primary"
+    // },
     {
         name: "➡️👨‍💻 개발자에게",
         slug: "to-dev",

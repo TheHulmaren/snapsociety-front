@@ -402,6 +402,9 @@ onMounted(async () => {
     articleType.value = articleTypes.filter((t) => t.slug === post.value.articleTypeId)[0]
 
     result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=Large&articleId=${route.params.id}&photoSorts=Added&isDescending=true&includePreUploaded=false&pageIndex=0&pageLimit=100`)
+    await Promise.all(result.data.map(async (photo) => {
+        photo.isLikedByCurrentUser = (await axios.get(`${import.meta.env.VITE_API_URL}/api/likes/checkIfLiked/photos/${photo.id}/user/${AuthHelper.getUser()?.id}`)).data
+    }))
 
     photos.value = result.data.map((photo) => {
         return {

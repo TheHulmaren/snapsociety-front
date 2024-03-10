@@ -2,9 +2,9 @@
     <div class="relative flex flex-col gap-4 items-center">
         <!-- bg video -->
         <div class=" absolute top-0 left-0 w-full">
-            <div class="absolute top-0 left-0 w-full h-[500px] bg-gray-900 bg-opacity-70"></div>
+            <div class="absolute top-0 left-0 w-full h-[450px] bg-gray-900 bg-opacity-70"></div>
             <div class="absolute bottom-0 left-0 w-full h-[70px] bg-gray-900 wave-clip"></div>
-            <video id="bgVideo" autoplay muted loop playsinline class="w-full h-[500px] object-cover">
+            <video id="bgVideo" autoplay muted loop playsinline class="w-full h-[400px] object-cover">
                 <source src="/intro-bgvideo.mov" type="video/mp4">
             </video>
         </div>
@@ -14,20 +14,18 @@
                 <div class="relative self-start">
                     <img src="/laurel.svg" alt="logo" class="laurel-white w-40" />
                     <span
-                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-300 text-xs text-center">No.1
-                        고품격<br>사진 커뮤니티</span>
+                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-gray-300 text-xs text-center text-nowrap whitespace-nowrap">No.1
+                        고품격<br>사진 공유 플랫폼</span>
                 </div>
                 <img src="/icon-512-maskable.png" alt="logo" class="w-12 rounded hover:cursor-pointer" />
             </div>
             <div class="gap-4 flex flex-col *:underline-offset-4 [&_span]:decoration-main [&_span]:font-semibold">
-                <h1 class="text-4xl font-semibold">갓 찍은 사진을 공유하고, 검색하고, 소통하세요.</h1>
-                <h2 class="text-lg text-gray-300">창조적인 1% 당신을 위한 최고의 사진 커뮤니티</h2>
+                <h1 class="text-4xl font-semibold">갓 찍은 사진을 공유하고, 검색하세요.</h1>
+                <h2 class="text-lg text-gray-300">창조적인 1% 당신을 위한 최고의 사진 공유 플랫폼</h2>
                 <div class="flex flex-col gap-2">
                     <h3>🌎 <span class="underline">사진을 손쉽게 업로드</span> 하세요</h3>
                     <h3>📸 다른 작가님의 사진을 <span class="underline">고해상도로 열람하세요</span></h3>
-                    <h3>👋 다른 <span class="underline">아마추어 & 프로페셔널 작가님과 소통</span>하세요</h3>
                     <h3>🔎 <span class="underline">최신 AI 이미지 검색 기술</span>을 이용해 원하는 사진을 검색하세요</h3>
-                    <h3>🚀 <span class="underline">성장하는 커뮤니티</span>의 일원이 되세요</h3>
                 </div>
             </div>
             <div class="flex flex-wrap gap-4 justify-center items-center w-full">
@@ -96,7 +94,7 @@ const appendItems = async (photos) => {
     for (const photo of photos) {
         let gridItem = document.createElement('img');
         gridItem.setAttribute('src', photo.largeUrl ?? photo.mediumUrl ?? photo.smallUrl ?? photo.thumbnailUrl ?? photo.url);
-        gridItem.setAttribute('class', 'p-1 object-cover cursor-pointer grid-item ');
+        gridItem.setAttribute('class', 'p-1 object-cover cursor-pointer grid-item');
         gridItem.setAttribute('style', `width: ${100 / 3}%; border-radius: 0.5rem;`)
         gridItem.addEventListener('click', () => {
             router.push(`/photos/${photo.id}`)
