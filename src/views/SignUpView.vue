@@ -87,7 +87,7 @@ var msnry = null;
 const passwordRegex = /^[A-Za-z\d!@#$%^&*()]{6,}$/
 
 const fetchTopPhotos = async () => {
-    const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=Small&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=0&pageLimit=15`);
+    const result = await axios.get(`${import.meta.env.VITE_API_URL}/api/photos?breakpoints=Small&photoSorts=Top&isDescending=true&includePreUploaded=false&pageIndex=0&pageLimit=30`);
     topPhotos.value = result.data
 }
 
@@ -96,14 +96,14 @@ const appendItems = async (photos) => {
     for (const photo of photos) {
         let gridItem = document.createElement('img');
         gridItem.setAttribute('src', photo.largeUrl ?? photo.mediumUrl ?? photo.smallUrl ?? photo.thumbnailUrl ?? photo.url);
-        gridItem.setAttribute('class', 'grid-item p-1 object-cover cursor-pointer');
+        gridItem.setAttribute('class', 'p-1 object-cover cursor-pointer grid-item ');
         gridItem.setAttribute('style', `width: ${100 / 3}%; border-radius: 0.5rem;`)
         gridItem.addEventListener('click', () => {
             router.push(`/photos/${photo.id}`)
         });
         grid.appendChild(gridItem);
         msnry.appended(gridItem);
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 150));
         msnry.layout();
     };
 }
@@ -148,7 +148,7 @@ onMounted(async () => {
     appendItems(topPhotos.value)
 })
 </script>
-<style scoped>
+<style>
 .laurel-white {
     -webkit-filter: grayscale(1) invert(1);
     filter: grayscale(1) invert(1);
@@ -170,4 +170,15 @@ onMounted(async () => {
 .wave-clip {
     clip-path: polygon(100% 100%, 0% 100%, 0.00% 83.71%, 3.33% 76.12%, 6.67% 67.19%, 10.00% 57.81%, 13.33% 48.88%, 16.67% 41.29%, 20.00% 35.77%, 23.33% 32.87%, 26.67% 32.87%, 30.00% 35.77%, 33.33% 41.29%, 36.67% 48.88%, 40.00% 57.81%, 43.33% 67.19%, 46.67% 76.12%, 50.00% 83.71%, 53.33% 89.23%, 56.67% 92.13%, 60.00% 92.13%, 63.33% 89.23%, 66.67% 83.71%, 70.00% 76.12%, 73.33% 67.19%, 76.67% 57.81%, 80.00% 48.88%, 83.33% 41.29%, 86.67% 35.77%, 90.00% 32.87%, 93.33% 32.87%, 96.67% 35.77%, 100.00% 41.29%);
 }
+
+.grid-item {
+    transition: transform 0.2s;
+}
+
+.grid-item:hover {
+    transition: transform 0.2s;
+    transform: scale(0.95);
+}
+
+
 </style>
