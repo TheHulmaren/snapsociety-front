@@ -28,7 +28,7 @@
                     클릭해서 자세히 보기
                 </span>
             </div>
-            <img @click="onImageClicked" class="rounded border-gray-700 border-0.5 sm:px-32 hover:bg-gray-800"
+            <img @click="onImageClicked" class="rounded border-gray-700 border-0.5 sm:px-24 hover:bg-gray-800"
                 :src="props.photo.largeUrl ?? props.photo.mediumUrl ?? props.photo.smallUrl ?? props.photo.thumbnailUrl ?? props.photo.url"
                 :alt="props.photo.desc" />
         </div>

@@ -2968,6 +2968,11 @@ video {
     padding-left: 8rem;
     padding-right: 8rem;
   }
+
+  .sm\:px-24 {
+    padding-left: 6rem;
+    padding-right: 6rem;
+  }
 }
 
 @media (min-width: 768px) {
