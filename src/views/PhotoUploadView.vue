@@ -45,7 +45,7 @@
                 <span>{{ uploadedCount }} / {{ imageFiles.length }}</span>
             </div>
             <span class=" animate-pulse">🌏🚀 사진을 업로드 중입니다..</span>
-            <span>잠시만 기다려 주세요</span>
+            <span>잠시만 기다려 주세요(오래 걸릴 수 있습니다)</span>
             <span class="text-xs">페이지를 새로고침하거나 나가시면 업로드가 정상적으로 진행되지 않습니다.</span>
         </div>
     </div>
