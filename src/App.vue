@@ -35,7 +35,7 @@ const refreshedById = ['photo-detail', 'post-detail', 'user-profile', 'user-phot
 
 const routerViewKey = () => {
   if (refreshedById.includes(route.name)) {
-    return route.params.id
+    return route.path + route.params.id
   }
 
   return undefined
