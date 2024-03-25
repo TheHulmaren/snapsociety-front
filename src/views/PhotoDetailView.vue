@@ -24,7 +24,7 @@
                 <h3>{{ photo.desc }}</h3>
             </div>
             <SectionHeader content="👨‍💻 업로더" />
-            <div @click="router.push('/user/' + photo.user.id)" class="flex gap-2 items-center cursor-pointer">
+            <div @click="router.push('/user/' + photo.user.id + '/photos?query=🕗%20업로드_👇%20최신%20순')" class="flex gap-2 items-center cursor-pointer">
                 <img :src="photo.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
                     class="w-10 h-10 rounded-full object-cover">
                 <div class="flex flex-col justify-between">

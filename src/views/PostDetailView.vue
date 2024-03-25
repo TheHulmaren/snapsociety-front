@@ -14,7 +14,7 @@
                 articleType.titleBefore
             }}</span>
             <h2 class="flex items-center gap-2 text-xl text-gray-300"> {{ post.title }}</h2>
-            <div @click="router.push('/user/' + post.authorId)"
+            <div @click="router.push('/user/' + post.authorId + '/photos?query=🕗%20업로드_👇%20최신%20순')"
                 class="flex text-xs gap-2 items-stretch cursor-pointer mt-2">
                 <img :src="post.user?.profilePhotoUrl ?? '/default-prof-img.webp'"
                     class="w-10 h-10 rounded-full object-cover">
