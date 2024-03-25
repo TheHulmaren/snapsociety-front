@@ -45,29 +45,24 @@
 
         </div>
         <!-- sign up form -->
-        <div class="px-4 w-full border-y-0.5 bg-gray-900 border-gray-700 py-4 sticky bottom-0 z-50">
-            <div class="flex gap-2 text-sm w-full mx-auto">
-                <div class="grow" :class="showPasswordInput ? 'hidden' : ''">
-                    <input v-model="signUpForm.email" name="email" type="text" placeholder="이메일"
-                        class="py-2 px-4 rounded bg-gray-950 border-0.5 border-gray-700 font-normal w-full">
+        <div @click="showSignUpModal = true"
+            class="px-4 w-full border-y-0.5 bg-gray-900 border-gray-700 py-4 sticky bottom-0 z-50">
+            <div class="flex gap-2 text-sm w-full mx-auto cursor-pointer">
+                <div class="grow">
+                    <div class="py-2 px-4 rounded bg-gray-950 border-0.5 border-gray-700 font-normal w-full h-full">이메일</div>
                 </div>
-                <div :class="showPasswordInput ? '' : 'hidden'" class="flex gap-2 grow">
-                    <input v-model="signUpForm.password" type="password" placeholder="비밀번호"
-                        class="py-2 px-4 rounded bg-gray-950 border-0.5 border-gray-700 font-normal w-full">
-                    <input v-model="signUpForm.passwordConfirm" type="password" placeholder="비밀번호 확인"
-                        class="py-2 px-4 rounded bg-gray-950 border-0.5 border-gray-700 font-normal w-full">
-                </div>
-                <DefaultButton v-if="!showPasswordInput" @click="showPasswordInput = true" class="" type="submit"
-                    content="가입하기" />
-                <DefaultButton v-if="showPasswordInput" @click="onSignUp" class="" type="submit" content="가입하기" />
+                <DefaultButton class="" type="submit" content="가입하기" />
             </div>
         </div>
+        <!-- sign up modal -->
+        <SignUpModalView v-if="showSignUpModal" @on-close="showSignUpModal = false" />
     </div>
 </template>
 <script setup>
 import axios from 'axios';
 import * as EmailValidator from 'email-validator';
 import DefaultButton from '@/components/DefaultButton.vue';
+import SignUpModalView from './SignUpModalView.vue';
 import { ref } from 'vue'
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -81,7 +76,7 @@ const signUpForm = ref({
     passwordConfirm: ""
 })
 const topPhotos = ref([])
-const showPasswordInput = ref(false)
+const showSignUpModal = ref(false)
 
 var msnry = null;
 const passwordRegex = /^[A-Za-z\d!@#$%^&*()]{6,}$/

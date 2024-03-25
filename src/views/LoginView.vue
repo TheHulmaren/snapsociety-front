@@ -25,10 +25,14 @@
             class="py-2 px-4 rounded self-center border-0.5 border-gray-700 text-xs font-semibold hover:text-main transition duration-100 ease-in-out">
             로그인
         </button>
+        <span class="text-xs">
+            혹은 <a type="button" @click="showSignUpModal = true" class="underline cursor-pointer">회원가입</a>
+        </span>
     </form>
+    <SignUpModalView v-if="showSignUpModal" @on-close="showSignUpModal = false" />
 </template>
 <script setup>
-import DefaultTextField from '@/components/DefaultTextField.vue';
+import SignUpModalView from './SignUpModalView.vue';
 import { AuthHelper } from '@/helpers/AuthHelper';
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -38,6 +42,7 @@ const router = useRouter()
 const id = ref("");
 const password = ref("");
 const showHelpDetail = ref(false);
+const showSignUpModal = ref(false);
 
 const onLoginSubmit = async () => {
     console.log("Attempt to login")
